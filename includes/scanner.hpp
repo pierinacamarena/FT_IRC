@@ -1,38 +1,41 @@
 #ifndef _SCANNERHPP
 #define _SCANNERHPP
 
-#include <iostream>
+#include <string>
 
 class  scanner
 {
 	private:
 
+	std::string _message;
     std::string::const_iterator start;
     std::string::const_iterator current;
 	// scanner() {}
 
 	public:
 
-    scanner(const std::string &message) : start(message.begin(), current(message.begin()))
-    {}
+    scanner(const std::string &message)
+    {
+		_message = message;
+		start = message.begin();
+		current = message.begin();
+	}
 
-    ~scanner() {}
+	int	getc()
+	{
+		return(*current++);
+	}
 
-
-
-    void setStart() {
+    void set_start() {
 		start = current;
     }
 
-	std::string	get_token()
+	std::string get_substr()
 	{
-		//command
-		while()
+		return (std::string(start, current));
 	}
 
 	private:
-
-	//helper function
 
 };
 
