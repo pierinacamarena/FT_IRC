@@ -57,15 +57,16 @@ class Poll
 
 	void	add_fd(int new_fd, int fd_count)
 	{
-		if (fd_count == _size)
+		if (_count == _size)
 		{
 			_pollfd.reserve(2 * _size);
 			_size = _pollfd.capacity();
 		}
-		_pollfd[fd_count].fd = new_fd;
-		_pollfd[fd_count].events = POLLIN;
+		_pollfd.push_back(pollfd());
+		_pollfd[_count].fd = new_fd;
+		_pollfd[_count].events = POLLIN;
 		_count++;
-		std::cout << "added fd is" <<_pollfd[fd_count].fd << std::endl;
+		// std::cout << "added fd is" <<_pollfd[fd_count].fd << std::endl;
 	}
 
 	void	delete_fd(int i)
