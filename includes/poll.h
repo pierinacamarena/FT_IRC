@@ -12,8 +12,9 @@
 #include <netdb.h>
 #include <vector>
 #include <poll.h>
+#include <iostream>
 
-class poll
+class Poll
 {
 	private:
 
@@ -23,18 +24,25 @@ class poll
 	
 	public:
 
-	poll()
+	Poll()
 	{
 		_pollfd.reserve(5);
 		_size = 5;
 		_count = 0;
 	}
 
-	poll(int start_size)
+	Poll(int start_size)
 	{
 		_pollfd.reserve(start_size);
 		_size = start_size;
 		_count = 0;
+	}
+
+	std::vector<struct pollfd> get_vector()
+	{
+		if (_pollfd.empty())
+			std::cout << "IT IS EMPTY" << std::endl;
+		return _pollfd;
 	}
 
 	int		get_size(void)
@@ -57,6 +65,7 @@ class poll
 		_pollfd[fd_count].fd = new_fd;
 		_pollfd[fd_count].events = POLLIN;
 		_count++;
+		std::cout << "added fd is" <<_pollfd[fd_count].fd << std::endl;
 	}
 
 	void	delete_fd(int i)
