@@ -9,6 +9,8 @@
 #include <netdb.h>
 #include <vector>
 #include <poll.h>
+#include "poll.h"
+#include <iostream>
 
 // #ifndef PORT
 // #define PORT "9034"
@@ -50,15 +52,84 @@ int	setup_listener(void)
 	return (listener);
 }
 
+void	*get_in_addr(struct sockaddr *sa)
+{
+	if (sa->sa_family == AF_INET)
+		return &(((struct sockaddr_in*)sa)->sin_addr);
+	return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
 int main(void)
 {
-	std::vector<struct pollfd> pollfds;
-
+	Poll pfds;
 	int	listener, new_fd;
 	struct sockaddr_storage	client_address;
 	socklen_t size_c_address;
 	char buff[256];
 	char remoteIP[INET6_ADDRSTRLEN];
-	int	pollfd_size = 5;
-	int	pollfd_count; = 0
+
+	if ((listener = setup_listener()) == -1)
+	{
+		std::cerr << "Error: failed to get listening socket" << std::endl;
+		std::exit(1);
+	}
+
+	pfds.add_fd(listener, 0);
+	std::cout << "the fd of listener is: "<< listener << std::endl;
+	std::cout << "the fd is: "<< pfds.get_vector()[0].fd << std::endl;
+	while (42)
+	{
+		if (poll(&pfds.get_vector()[0], pfds.get_count(), -1) == -1)
+		{
+			perror("poll");
+			exit(1);
+		}
+		for (int i = 0; i < pfds.get_count(); i++)
+		{
+			if (pfds.get_vector()[i].revents & POLLIN)
+			{
+				if (pfds.get_vector()[i].fd == listener)
+				{			
+					size_c_address = sizeof client_address;
+					if ((new_fd = accept(listener, (struct sockaddr *)&client_address, &size_c_address)) == -1)
+						perror("accept:");
+					else
+					{
+						pfds.add_fd(new_fd, pfds.get_count());
+
+						std::cout << "pollserver: new connection from " << inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remoteIP, INET6_ADDRSTRLEN) << "on socket " << new_fd << std::endl;
+					}
+				}
+				else
+				{
+					int numbytes = recv(pfds.get_vector()[i].fd, buff, sizeof buff, 0);
+
+					int sender_fd = pfds.get_vector()[i].fd;
+
+					if (numbytes <= 0)
+					{
+						if (numbytes == 0)
+							std::cout << "pollserver: socket " << sender_fd << " hung up" << std::endl;
+						else
+							perror("recv:");
+						close(pfds.get_vector()[i].fd);
+						pfds.delete_fd(i);
+					}
+					else
+					{
+						for (int j = 0; j < pfds.get_count(); j++)
+						{
+							int dest_fd = pfds.get_vector()[j].fd;
+							if (dest_fd != listener && dest_fd != sender_fd)
+							{
+								if (send(dest_fd, buff, numbytes, 0) == -1)
+									perror("send");
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
 }
