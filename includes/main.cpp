@@ -75,17 +75,20 @@ int main(void)
 	}
 
 	pfds.add_fd(listener, 0);
-	std::cout << "the fd of listener is: "<< listener << std::endl;
-	std::cout << "the fd is: "<< pfds.get_vector()[0].fd << std::endl;
-	while (42)
+
+	for (int k = 0; k < 50; k++)
 	{
 		if (poll(&pfds.get_vector()[0], pfds.get_count(), -1) == -1)
 		{
 			perror("poll");
 			exit(1);
 		}
+		std::cout << "here" << std::endl;
 		for (int i = 0; i < pfds.get_count(); i++)
 		{
+			std::cout << "ENTERING HEREEEE" << std::endl;
+			std::cout << "count is: " << pfds.get_count() << std::endl;
+			std::cout << "pfds.revents is: " << pfds.get_vector()[i].revents << std::endl;
 			if (pfds.get_vector()[i].revents & POLLIN)
 			{
 				if (pfds.get_vector()[i].fd == listener)
