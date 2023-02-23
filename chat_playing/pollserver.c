@@ -159,7 +159,7 @@ int main(void)
 
                 if (pfds[i].fd == listener) {
                     // If listener is ready to read, handle new connection
-
+					printf("on the listener\n");
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener,
                         (struct sockaddr *)&remoteaddr,
@@ -178,6 +178,7 @@ int main(void)
                             newfd);
                     }
                 } else {
+					printf("on the client\n");
                     // If not the listener, we're just a regular client
                     int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);
 
@@ -198,6 +199,7 @@ int main(void)
 
                     } else {
                         // We got some good data from a client
+						printf("we got data from the client\n");
 
                         for(int j = 0; j < fd_count; j++) {
                             // Send to everyone!
