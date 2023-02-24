@@ -140,23 +140,23 @@ int main(void)
 
     // Main loop
     for(;;) {
-		printf("on the loop\n");
+		// printf("on the loop\n");
         int poll_count = poll(pfds, fd_count, -1);
-		printf("done pollin\n");
+		// printf("done pollin\n");
 
         if (poll_count == -1) {
             perror("poll");
             exit(1);
         }
-		printf("here again meoooow\n");
+		// printf("here again meoooow\n");
         // Run through the existing connections looking for data to read
         for(int i = 0; i < fd_count; i++) {
-			printf("entering here\n");
+			// printf("entering here\n");
 
             // Check if someone's ready to read
             if (pfds[i].revents & POLLIN) { // We got one!!
-				printf("we got a connection\n");
-
+				// printf("we got a connection\n");
+				// printf("pfds[%d].revents = %d\n", i, pfds[i].revents);
                 if (pfds[i].fd == listener) {
                     // If listener is ready to read, handle new connection
 					printf("on the listener\n");
@@ -199,7 +199,7 @@ int main(void)
 
                     } else {
                         // We got some good data from a client
-						printf("we got data from the client\n");
+						// printf("we got data from the client");
 
                         for(int j = 0; j < fd_count; j++) {
                             // Send to everyone!
@@ -215,7 +215,7 @@ int main(void)
                     }
                 } // END handle data from client
             }
-			printf("the value of i is %d\n", i); // END got ready-to-read from poll()
+			// printf("the value of i is %d\n", i); // END got ready-to-read from poll()
         } // END looping through file descriptors
     } // END for(;;)--and you thought it would never end!
     
