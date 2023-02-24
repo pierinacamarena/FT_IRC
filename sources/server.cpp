@@ -1,6 +1,6 @@
-#include "../includes/Server.hpp"
+#include "../includes/SocketServer.hpp"
 
-Server::Server(const char *port)
+SocketServer::SocketServer(const char *port)
 {
 	yes = 1;
 	memset(&hints, 0, sizeof(hints));
@@ -36,12 +36,12 @@ Server::Server(const char *port)
 	}
 }
 
-Server::~Server()
+SocketServer::~SocketServer()
 {
-	close(listener);
+	// close(listener);
 }
 
-int	Server::get_listener(void) const
+int	SocketServer::get_listener(void) const
 {
 	return listener;
 }
