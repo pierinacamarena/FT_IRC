@@ -1,5 +1,5 @@
-#ifndef _SERVER_HPP_
-#define _SERVER_HPP_
+#ifndef _SOCKETSERVER_HPP_
+#define _SOCKETSERVER_HPP_
 
 #include <netdb.h>
 #include <cstring>
@@ -7,20 +7,19 @@
 #include <iostream>
 #include <unistd.h>
 
-class Server
+class SocketServer
 {
 	private:
 		struct addrinfo hints;
 		struct addrinfo *servinfo;
 		struct addrinfo *p;
 		int				listener;
-		int				yes;
+		int				yes = 1;
 
 	public:
-		Server(const char *port);
+		SocketServer(const char *port);
 		// {
-		// 	yes = 1;
-		// 	memset(&hints, 0, sizeof(hints));
+		// 	memset(&hints, 0, sizeof hints);
 		// 	hints.ai_family = AF_UNSPEC;
 		// 	hints.ai_socktype = SOCK_STREAM;
 		// 	hints.ai_flags = AI_PASSIVE;
@@ -53,9 +52,10 @@ class Server
 		// 	}
 		// }
 
-		~Server();
+		~SocketServer();
 		// {
-		// 	close(listener);
+		// 	std::cout << "calling destructor" << std::endl;
+		// 	// close(listener);
 		// }
 
 		int	get_listener(void) const;
