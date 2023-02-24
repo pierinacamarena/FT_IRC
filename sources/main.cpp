@@ -10,47 +10,8 @@
 #include <vector>
 #include <poll.h>
 #include <iostream>
-#include "../includes/Server.hpp"
+#include "../includes/SocketServer.hpp"
 
-// #ifndef PORT
-// #define PORT "9034"
-// #endif
-
-int	setup_listener(void)
-{
-	int		status;
-	int		listener;
-	struct addrinfo hints, *servinfo, *p;
-	int		yes=1;
-
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-	if ((status = getaddrinfo(NULL, "9034", &hints, &servinfo)) != 0)
-	{
-		perror("getaddrinfo: ");
-		exit (1);
-	}
-	
-	for (p = servinfo; p != NULL; p = p->ai_next)
-	{
-		if ((listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
-			continue;
-		setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-		if ((status = bind(listener, p->ai_addr, p->ai_addrlen)) == -1)
-			continue;
-		break;
-	}
-	freeaddrinfo(servinfo);
-	if (p == NULL)
-		return -1;
-	if (listen(listener, 10) == -1)
-		return -1;
-	
-	return (listener);
-}
 
 void	*get_in_addr(struct sockaddr *sa)
 {
@@ -90,19 +51,15 @@ int main(void)
 	int fd_count = 0;
     int fd_size = 5;
 
-	// Server server("9034");
-
 	pollfd* pfds = new pollfd[fd_size];
-	if ((listener = setup_listener()) == -1)
+
+	SocketServer socket_server("9034");
+	
+	if ((listener = socket_server.get_listener()) == -1)
 	{
 		std::cerr << "Error: failed to get listening socket" << std::endl;
 		std::exit(1);
 	}
-	// if ((listener = server.get_listener()) == -1)
-	// {
-	// 	std::cerr << "Error: failed to get listening socket" << std::endl;
-	// 	std::exit(1);
-	// }
 	add_to_pfds(&pfds, listener, &fd_count, &fd_size);
 
 	for(;;)
@@ -116,10 +73,12 @@ int main(void)
 		}
 		for (int i = 0; i < fd_count; i++)
 		{
-			if (pfds[i].revents & POLLIN)
+			std::cout << "i: " << i << " pfds[i].fd: " << pfds[i].fd << " pfds[i].revents: " << pfds[i].revents << std::endl;
+			if ((pfds[i].revents == 1) & POLLIN)
 			{
 				if (pfds[i].fd == listener)
 				{
+					std::cout << "on the listener" << std::endl;
 					size_c_address = sizeof(client_address);
 					new_fd = accept(listener, 
 					(struct sockaddr *)&client_address, 
@@ -165,6 +124,8 @@ int main(void)
 				}
 			}
 		}
+		std::cout << "exited for loop" << std::endl;
+		std::cout << "_____________________________________________" << std::endl;
 	}
 	return 0;
 }
