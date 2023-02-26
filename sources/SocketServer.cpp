@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SocketServer.cpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/26 19:47:15 by pcamaren          #+#    #+#             */
+/*   Updated: 2023/02/26 19:47:22 by pcamaren         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/SocketServer.hpp"
 
-SocketServer::SocketServer(const char *port,char *psswd) : _port(port), _psswd(psswd)
+SocketServer::SocketServer(const char *port) : _port(port)
 {
 	yes = 1;
 	memset(&hints, 0, sizeof(hints));
@@ -9,7 +21,7 @@ SocketServer::SocketServer(const char *port,char *psswd) : _port(port), _psswd(p
 	hints.ai_flags = AI_PASSIVE;
 
 	int status;
-	if ((status = getaddrinfo(NULL, port, &hints, &servinfo)) != 0)
+	if ((status = getaddrinfo(NULL, _port, &hints, &servinfo)) != 0)
 	{
 		perror("getaddrinfo:");
 		exit(1);
