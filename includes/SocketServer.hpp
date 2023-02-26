@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <unistd.h>
+// #define
 
 class SocketServer
 {
@@ -16,12 +17,15 @@ class SocketServer
 		int				listener;
 		int				yes = 1;
 
+		void	socket_bind();
+
+		void	socket_listen();
 	public:
 		SocketServer(const char *port);
 
 		virtual ~SocketServer();
 
-		int	get_listener(void) const;
+		int		get_listener(void) const;
 };
 
 #endif
