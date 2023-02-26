@@ -1,6 +1,6 @@
 #include "../includes/SocketServer.hpp"
 
-SocketServer::SocketServer(const char *port)
+SocketServer::SocketServer(const char *port,char *psswd) : _port(port), _psswd(psswd)
 {
 	yes = 1;
 	memset(&hints, 0, sizeof(hints));
