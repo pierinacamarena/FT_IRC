@@ -21,7 +21,8 @@ class Server
 		int	fd_count;
 		int	fd_size;
 		int	new_fd;
-		struct pollfd* pfds = new pollfd[5];
+		// struct pollfd* pfds = new pollfd[5];
+		std::vector<struct pollfd> _pfds;
 		int _listener;
 		struct sockaddr_storage	client_address;
 		socklen_t size_c_address;
@@ -30,35 +31,44 @@ class Server
 
 	public:
 	
-	Server(int listener, int size)
+	Server(int listener)
 	{
 		_listener = listener;
 		fd_count = 0;
-		fd_size = size;
-		memset(pfds, 0, sizeof(struct pollfd) * 5);
+		fd_size = 0;
+		_pfds.push_back(pollfd());
+		_pfds.back().fd = listener;
+		_pfds.back().events = POLLIN;
+		_pfds.back().revents = 0;
+		// memset(pfds, 0, sizeof(struct pollfd) * 5);
 	}
 
 	void add_to_pfds(int new_fd)
 	{
-    	if (fd_count == fd_size) {
-        	fd_size *= 2;
-        	pfds = (struct pollfd*)realloc(pfds, sizeof(struct pollfd) * (fd_size));
-    	}
+		_pfds.push_back(pollfd());
+		_pfds.back().fd = new_fd;
+		_pfds.back().events = POLLIN;
+		_pfds.back().revents = 0;
+    	// fd_count++;
+    	// if (fd_count == fd_size) {
+        // 	fd_size *= 2;
+        // 	pfds = (struct pollfd*)realloc(pfds, sizeof(struct pollfd) * (fd_size));
+    	// }
 
-    	pfds[fd_count].fd = new_fd;
-	    pfds[fd_count].events = POLLIN;
-
-    	fd_count++;
+    	// pfds[fd_count].fd = new_fd;
+	    // pfds[fd_count].events = POLLIN;
 	}
 
 	void del_from_pfds(int i)
 	{
-		pfds[i] = pfds[fd_count - 1];
-		fd_count--;
+		_pfds.erase(_pfds.begin() + i);
+		// pfds[i] = pfds[fd_count - 1];
+		// fd_count--;
 	}
+
 	int	get_fd(int i)
 	{
-		return pfds[i].fd;
+		return _pfds[i].fd;
 	}
 
 	void	*get_in_addr(struct sockaddr *sa)
@@ -71,25 +81,26 @@ class Server
 	void run()
 	{
 		std::cout << "___________________" << std::endl;
-		std::cout << " pfds[0].fd: " << pfds[0].fd << " pfds[0].revents: " << pfds[0].revents << std::endl;
-		add_to_pfds(_listener);
-		std::cout << " pfds[0].fd: " << pfds[0].fd << " pfds[0].revents: " << pfds[0].revents << std::endl;
-		
+		std::cout << " pfds[0].fd: " << _pfds[0].fd << " pfds[0].revents: " << _pfds[0].revents << std::endl;
+		// add_to_pfds(_listener);
+		std::cout << " pfds[0].fd: " << _pfds[0].fd << " pfds[0].revents: " << _pfds[0].revents << std::endl;
+		std::cout << "array is empty: " << _pfds.empty() <<  " size: " << _pfds.size() << std::endl;
 		while (1)
 		{
-			int poll_count = poll(pfds, fd_count, -1);
+			int poll_count = poll(&_pfds[0], _pfds.size(), -1);
 
 			if (poll_count == -1)
 			{
 				perror("poll:");
 				exit(1);
 			}
-			for (int i = 0; i < fd_count; i++)
+			std::cout << "poll is: " << poll_count << std::endl;
+			for (int i = 0; i < _pfds.size(); i++)
 			{
-				std::cout << "i: " << i << " pfds[i].fd: " << pfds[i].fd << "pfds[i].revents: " << pfds[i].revents << std::endl;
-				if (pfds[i].revents & POLLIN)
+				std::cout << "i: " << i << " pfds[i].fd: " << _pfds[i].fd << "pfds[i].revents: " << _pfds[i].revents << std::endl;
+				if (_pfds[i].revents & POLLIN)
 				{
-					if (pfds[i].fd == _listener)
+					if (_pfds[i].fd == _listener)
 					{
 						std::cout << "I am in the listener" << std::endl;
 						size_c_address = sizeof(client_address);
@@ -101,18 +112,18 @@ class Server
 						else
 						{
 							std::cout << "___________________" << std::endl;
-							std::cout << "i: " << i << " pfds[i+1].fd: " << pfds[i+1].fd << " pfds[i+1].revents: " << pfds[i+1].revents << std::endl;
+							std::cout << "i: " << i << " pfds[i+1].fd: " << _pfds[i+1].fd << " pfds[i+1].revents: " << _pfds[i+1].revents << std::endl;
 							add_to_pfds(new_fd);
 							std::cout << "___________________" << std::endl;
-							std::cout << "i: " << i << " pfds[i+1].fd: " << pfds[i+1].fd << " pfds[i+1].revents: " << pfds[i+1].revents << std::endl;
+							std::cout << "i: " << i << " pfds[i+1].fd: " << _pfds[i+1].fd << " pfds[i+1].revents: " << _pfds[i+1].revents << std::endl;
 							std::cout << "pollserver: new connection from " << inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remoteIP, INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
 						}
 					}
 					else
 					{
 						std::cout << "I am in the client" << std::endl;
-						int numbytes = recv(pfds[i].fd, buff, sizeof(buff), 0);
-						int sender_fd = pfds[i].fd;
+						int numbytes = recv(_pfds[i].fd, buff, sizeof(buff), 0);
+						int sender_fd = _pfds[i].fd;
 						if (numbytes <= 0)
 						{
 							if (numbytes == 0)
@@ -124,9 +135,9 @@ class Server
 						}
 						else
 						{
-							for (int j = 0; j < fd_count; j++)
+							for (int j = 0; j < _pfds.size(); j++)
 							{
-								int dest_fd = pfds[j].fd;
+								int dest_fd = _pfds[j].fd;
 								if (dest_fd != _listener && dest_fd != sender_fd)
 								{
 									if (send(dest_fd, buff, numbytes, 0) == -1)
@@ -139,6 +150,7 @@ class Server
 			}
 			std::cout << "_________________" << std::endl;
 			std::cout << "left for loop" << std::endl;
+			std::cout << "_________________" << std::endl;
 		}
 	}
 
