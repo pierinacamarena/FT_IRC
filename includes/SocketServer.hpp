@@ -19,7 +19,7 @@ class SocketServer
 	public:
 		SocketServer(const char *port);
 
-		~SocketServer();
+		virtual ~SocketServer();
 
 		int	get_listener(void) const;
 };
