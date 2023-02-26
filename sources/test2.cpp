@@ -26,7 +26,7 @@ int main(void)
 {
 	SocketServer socket_server("9034");
 	int	listener = socket_server.get_listener();
-	Server server(listener, 5);
+	Server server(listener);
 	server.run();
 	return 0;
 }
