@@ -16,12 +16,14 @@ class SocketServer
 		struct addrinfo *p;
 		int				listener;
 		int				yes = 1;
+		const char*		_port;
+		char*		_psswd;
 
 		void	socket_bind();
 
 		void	socket_listen();
 	public:
-		SocketServer(const char *port);
+		SocketServer(const char *port,char *psswd);
 
 		virtual ~SocketServer();
 
