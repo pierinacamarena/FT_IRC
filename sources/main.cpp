@@ -51,30 +51,36 @@ int main(void)
 	int fd_count = 0;
     int fd_size = 5;
 
-	pollfd* pfds = new pollfd[fd_size];
+	struct pollfd* pfds = new pollfd[fd_size];
 
 	SocketServer socket_server("9034");
-	
+
 	if ((listener = socket_server.get_listener()) == -1)
 	{
 		std::cerr << "Error: failed to get listening socket" << std::endl;
 		std::exit(1);
 	}
+	std::cout << "___________________" << std::endl;
+	std::cout << " pfds[0].fd: " << pfds[0].fd << " pfds[0].revents: " << pfds[0].revents << std::endl;
 	add_to_pfds(&pfds, listener, &fd_count, &fd_size);
+	std::cout << " pfds[0].fd: " << pfds[0].fd << " pfds[0].revents: " << pfds[0].revents << std::endl;
 
 	for(;;)
 	{
+		std::cout << "here" << std::endl;
 		int poll_count = poll(pfds, fd_count, -1);
+		std::cout << "done polling" << std::endl;
 
 		if (poll_count == -1)
 		{
 			perror("poll:");
 			exit(1);
 		}
+		std::cout << "poll_count: " << poll_count << std::endl;
 		for (int i = 0; i < fd_count; i++)
 		{
 			std::cout << "i: " << i << " pfds[i].fd: " << pfds[i].fd << " pfds[i].revents: " << pfds[i].revents << std::endl;
-			if ((pfds[i].revents == 1) & POLLIN)
+			if (pfds[i].revents & POLLIN)
 			{
 				if (pfds[i].fd == listener)
 				{
@@ -88,7 +94,11 @@ int main(void)
 						perror("accept");
 					else
 					{
+						std::cout << "___________________" << std::endl;
+						std::cout << "i: " << i << " pfds[i+1].fd: " << pfds[i+1].fd << " pfds[i].revents: " << pfds[i+1].revents << std::endl;
 						add_to_pfds(&pfds, new_fd, &fd_count, &fd_size);
+						std::cout << "___________________" << std::endl;
+						std::cout << "i: " << i << " pfds[i+1].fd: " << pfds[i+1].fd << " pfds[i].revents: " << pfds[i+1].revents << std::endl;
 						std::cout << "pollserver: new connection from " << inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remoteIP, INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
 
 					}
