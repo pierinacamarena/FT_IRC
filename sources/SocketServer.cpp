@@ -14,6 +14,23 @@ SocketServer::SocketServer(const char *port)
 		perror("getaddrinfo:");
 		exit(1);
 	}
+	socket_bind();
+	socket_listen();
+}
+
+SocketServer::~SocketServer()
+{
+	std::cout << "here here here" << std::endl;
+	if (listener > 0)
+	{
+		shutdown(listener, 2);
+		close(listener);
+	}
+}
+
+void	SocketServer::socket_bind()
+{
+	int	status;
 	for (p = servinfo; p != NULL; p = p->ai_next)
 	{
 		if ((listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
@@ -23,22 +40,21 @@ SocketServer::SocketServer(const char *port)
 			continue;
 		break;
 	}
-	freeaddrinfo(servinfo);
+		freeaddrinfo(servinfo);
 	if (p == NULL)
 	{
 		std::cerr << "ERROR: failed to bind socket" << std::endl;
 		exit(1);
 	}
-	if (listen(listener, 10) == -1)
+}
+
+void	SocketServer::socket_listen()
+{
+		if (listen(listener, 10) == -1)
 	{
 		std::cerr << "ERROR: failed to listen on socket" << std::endl;
 		exit(1);
 	}
-}
-
-SocketServer::~SocketServer()
-{
-	// close(listener);
 }
 
 int	SocketServer::get_listener(void) const
