@@ -1,46 +1,30 @@
 #ifndef _SERVER_HPP_
 #define _SERVER_HPP_
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <vector>
-#include <poll.h>
-#include <iostream>
 #include "SocketServer.hpp"
 
 class Server
 {
 	private:
-		int	fd_count;
-		int	fd_size;
-		int	new_fd;
-		// struct pollfd* pfds = new pollfd[5];
-		std::vector<struct pollfd> _pfds;
-		int _listener;
-		struct sockaddr_storage	client_address;
-		socklen_t size_c_address;
-		char buff[256];
-		char remoteIP[INET6_ADDRSTRLEN];
+		std::vector<struct pollfd>	_pfds;
+		int							new_fd;
+		int 						_listener;
+		struct sockaddr_storage		client_address;
+		socklen_t					size_c_address;
+		char						buff[256];
+		char						remoteIP[INET6_ADDRSTRLEN];
+		std::string 				_password;
 
 	public:
 	
-	Server(int listener)
+	Server(int listener, std::string password) : _listener(listener), _password(password)
 	{
 		_listener = listener;
-		fd_count = 0;
-		fd_size = 0;
+		std::cout << "Password: " << _password << std::endl;
 		_pfds.push_back(pollfd());
 		_pfds.back().fd = listener;
 		_pfds.back().events = POLLIN;
 		_pfds.back().revents = 0;
-		// memset(pfds, 0, sizeof(struct pollfd) * 5);
 	}
 
 	void add_to_pfds(int new_fd)
@@ -49,21 +33,11 @@ class Server
 		_pfds.back().fd = new_fd;
 		_pfds.back().events = POLLIN;
 		_pfds.back().revents = 0;
-    	// fd_count++;
-    	// if (fd_count == fd_size) {
-        // 	fd_size *= 2;
-        // 	pfds = (struct pollfd*)realloc(pfds, sizeof(struct pollfd) * (fd_size));
-    	// }
-
-    	// pfds[fd_count].fd = new_fd;
-	    // pfds[fd_count].events = POLLIN;
 	}
 
 	void del_from_pfds(int i)
 	{
 		_pfds.erase(_pfds.begin() + i);
-		// pfds[i] = pfds[fd_count - 1];
-		// fd_count--;
 	}
 
 	int	get_fd(int i)
@@ -82,7 +56,6 @@ class Server
 	{
 		std::cout << "___________________" << std::endl;
 		std::cout << " pfds[0].fd: " << _pfds[0].fd << " pfds[0].revents: " << _pfds[0].revents << std::endl;
-		// add_to_pfds(_listener);
 		std::cout << " pfds[0].fd: " << _pfds[0].fd << " pfds[0].revents: " << _pfds[0].revents << std::endl;
 		std::cout << "array is empty: " << _pfds.empty() <<  " size: " << _pfds.size() << std::endl;
 		while (1)
@@ -95,7 +68,7 @@ class Server
 				exit(1);
 			}
 			std::cout << "poll is: " << poll_count << std::endl;
-			for (int i = 0; i < _pfds.size(); i++)
+			for (size_t i = 0; i < _pfds.size(); i++)
 			{
 				std::cout << "i: " << i << " pfds[i].fd: " << _pfds[i].fd << "pfds[i].revents: " << _pfds[i].revents << std::endl;
 				if (_pfds[i].revents & POLLIN)
@@ -135,7 +108,7 @@ class Server
 						}
 						else
 						{
-							for (int j = 0; j < _pfds.size(); j++)
+							for (size_t j = 0; j < _pfds.size(); j++)
 							{
 								int dest_fd = _pfds[j].fd;
 								if (dest_fd != _listener && dest_fd != sender_fd)
