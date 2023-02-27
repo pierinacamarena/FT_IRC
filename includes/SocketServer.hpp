@@ -10,9 +10,7 @@ class SocketServer
 		struct addrinfo *servinfo;
 		struct addrinfo *p;
 		int				listener;
-		int				yes;
 		const char*		_port;
-		// char*		_psswd;
 
 		void	socket_bind();
 
