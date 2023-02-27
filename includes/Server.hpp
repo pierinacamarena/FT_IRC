@@ -29,6 +29,12 @@ class Server
 
 	void	accept_connection(size_t location);
 
+	void	receive_send_data(size_t location);
+
+	void	send_data(int numbytes, int sender_fd);
+
+	int		receive_data(size_t location, int *numbytes);
+
 	void run();
 
 };
