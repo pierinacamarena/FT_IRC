@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <vector>
 #include <poll.h>
+#include <fcntl.h>
 #include <iostream>
 
 #ifndef DEBUG
