@@ -20,4 +20,8 @@
 #include <poll.h>
 #include <iostream>
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
 #endif
