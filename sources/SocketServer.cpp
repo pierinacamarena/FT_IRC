@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/26 19:47:15 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/02/26 19:47:22 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/02/27 22:18:31 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 SocketServer::SocketServer(const char *port) : _port(port)
 {
-	yes = 1;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -47,7 +46,17 @@ void	SocketServer::socket_bind()
 	{
 		if ((listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) < 0)
 			continue;
-		setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+		int yes = 1;
+		if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)))
+		{
+			perror("setsockopt:");
+			exit(1);
+		}
+		if (fcntl(listener, F_SETFL, O_NONBLOCK) < 0)
+		{
+			perror("fcntl:");
+			exit(1);
+		}
 		if ((status = bind(listener, p->ai_addr, p->ai_addrlen)) == -1)
 			continue;
 		break;
