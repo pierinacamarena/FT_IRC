@@ -38,6 +38,10 @@ fclean: clean
 
 re: fclean all
 
+debug: 
+	$(MAKE) FLAGS+='-DDEBUG=1' all
+
+
 rambo:
 	echo '                      /^--^\     /^--^\     /^--^\'
 	echo '                      \____/     \____/     \____/'
@@ -59,4 +63,4 @@ rambo:
 	echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
 	echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
 
-.PHONY: all clean fclean rambo
+.PHONY: all clean fclean re rambo debug
