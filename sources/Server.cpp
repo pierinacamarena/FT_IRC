@@ -56,22 +56,26 @@ void	Server::accept_connection(size_t location)
 			std::cout << "___________________" << std::endl;
 			std::cout << "i: " << location << " pfds[i+1].fd: " << _pfds[location+1].fd << " pfds[i+1].revents: " << _pfds[location+1].revents << std::endl;
 		}
-		add_to_pfds(new_fd);
 		if (DEBUG)
 		{
 			std::cout << "___________________" << std::endl;
 			std::cout << "i: " << location << " pfds[i+1].fd: " << _pfds[location+1].fd << " pfds[i+1].revents: " << _pfds[location+1].revents << std::endl;
 		}
-		std::cout << "pollserver: new connection from " << inet_ntop(c_addr.ss_family, 
-																		get_in_addr((struct sockaddr*)&c_addr), 
-																		remoteIP, 
-																		INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
+
+		const char *result = inet_ntop(c_addr.ss_family, get_in_addr((struct sockaddr*)&c_addr), remoteIP, INET6_ADDRSTRLEN);
+		if (result == NULL) {
+			perror("inet_ntop");
+			exit(EXIT_FAILURE);
+		}
 		int err;
 		if ((err = getnameinfo((struct sockaddr*)&c_addr, sizeof(c_addr), host, NI_MAXHOST, NULL, 0, 0)) != 0)
 			perror("getnameinfo: ");
 		else
 			std::cout << "Hostname: " << host << std::endl;
-		// new Client(new_fd, c_addr, host);
+		_clients[new_fd] = new Client(new_fd, remoteIP, host);
+		add_to_pfds(new_fd);
+		std::cout << "pollserver: new connection from " << remoteIP << " on socket: " << new_fd << std::endl;
+
 	}
 }
 
