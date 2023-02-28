@@ -20,6 +20,7 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <iostream>
+#include <map>
 
 #ifndef DEBUG
 #define DEBUG 0
