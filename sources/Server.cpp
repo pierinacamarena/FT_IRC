@@ -37,12 +37,16 @@ void	*Server::get_in_addr(struct sockaddr *sa)
 
 void	Server::accept_connection(size_t location)
 {
+	char					remoteIP[INET6_ADDRSTRLEN];
+	char 					host[NI_MAXHOST];
+	socklen_t				size_c_addr;
+	struct sockaddr_storage	c_addr;
+	int						new_fd;
+
 	if (DEBUG)
 		std::cout << "I am in the listener" << std::endl;
-	size_c_address = sizeof(client_address);
-	new_fd = accept(_listener, 
-	(struct sockaddr *)&client_address, 
-	&size_c_address);
+	size_c_addr = sizeof(c_addr);
+	new_fd = accept(_listener, (struct sockaddr *)&c_addr, &size_c_addr);
 	if (new_fd == -1)
 		perror("accept");
 	else
@@ -58,7 +62,16 @@ void	Server::accept_connection(size_t location)
 			std::cout << "___________________" << std::endl;
 			std::cout << "i: " << location << " pfds[i+1].fd: " << _pfds[location+1].fd << " pfds[i+1].revents: " << _pfds[location+1].revents << std::endl;
 		}
-		std::cout << "pollserver: new connection from " << inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remoteIP, INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
+		std::cout << "pollserver: new connection from " << inet_ntop(c_addr.ss_family, 
+																		get_in_addr((struct sockaddr*)&c_addr), 
+																		remoteIP, 
+																		INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
+		int err;
+		if ((err = getnameinfo((struct sockaddr*)&c_addr, sizeof(c_addr), host, NI_MAXHOST, NULL, 0, 0)) != 0)
+			perror("getnameinfo: ");
+		else
+			std::cout << "Hostname: " << host << std::endl;
+		// new Client(new_fd, c_addr, host);
 	}
 }
 
