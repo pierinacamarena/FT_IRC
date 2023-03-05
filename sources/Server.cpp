@@ -1,9 +1,8 @@
 #include "../includes/Server.hpp"
 
-Server::Server(int listener, std::string password) : _listener(listener), _password(password)
+Server::Server(int listener, Data *data) : _listener(listener), _data(data)
 {
 	_listener = listener;
-	std::cout << "Password: " << _password << std::endl;
 	_pfds.push_back(pollfd());
 	_pfds.back().fd = listener;
 	_pfds.back().events = POLLIN;
@@ -37,8 +36,6 @@ void	*Server::get_in_addr(struct sockaddr *sa)
 
 int	Server::accept_connection(size_t location)
 {
-	char					remoteIP[INET6_ADDRSTRLEN];
-	char 					host[NI_MAXHOST];
 	socklen_t				size_c_addr;
 	struct sockaddr_storage	c_addr;
 	int						new_fd;
@@ -77,12 +74,12 @@ int	Server::accept_connection(size_t location)
 			std::cout << "Hostname: " << host << std::endl;
 		// _clients[new_fd] = new Client(new_fd, remoteIP, host);
 		
-		add_to_pfds(new_fd);
 		if ((fcntl(new_fd, F_SETFL, O_NONBLOCK)) < 0)
-			{
-				perror("fcntl: ");
-				exit(1);
-			}
+		{
+			perror("fcntl: ");
+			exit(1);
+		}
+		add_to_pfds(new_fd);
 		std::cout << "pollserver: new connection from " << remoteIP << " on socket: " << new_fd << std::endl;
 		return (new_fd);
 	}
@@ -118,12 +115,9 @@ void	Server::send_data(int numbytes, int sender_fd)
 int		Server::receive_data(pfd_iter iter, int *numbytes)
 {
 	*numbytes = recv(iter->fd, buff, sizeof(buff), 0);
-	if (*numbytes <= 0)
+	if (*numbytes < 0)
 	{
-		if (*numbytes == 0)
-			std::cout << "pollserver: socket " << iter->fd << " hung up" << std::endl;
-		else
-			perror("recv:");
+		perror("recv:");
 		close(iter->fd);
 		del_from_pfds(iter);
 		return (-1);
@@ -153,18 +147,56 @@ void	Server::run()
 		if (DEBUG)
 			std::cout << "poll is: " << poll_count << std::endl;
 		if (_pfds[0].revents == POLLIN)
-			accept_connection(0);
+		{
+			int fd = accept_connection(0);
+			_data->add_user(fd, host, remoteIP);
+		}
 		else
 		{
 			std::vector<struct pollfd>::iterator _iter = _pfds.begin();
-			int	ret;
 			while (_iter != _pfds.end())
 			{
-				if ( _iter->revents == POLLIN)
+				if (_iter->revents == POLLHUP)
 				{
-					ret = receive_send_data(_iter);
-					if (ret == 0)
-						++_iter;
+					std::cout << "pollserver: socket " << _iter->fd << " hung up" << std::endl;
+					close(_iter->fd);
+					del_from_pfds(_iter);
+					_data->delete_user(_iter->fd);
+				}
+				else if ( _iter->revents == POLLIN)
+				{
+					try {
+						parser	p(_iter->fd);
+						// ret = receive_send_data(_iter);
+						p.parse();
+						while (p.state() != STOP_PARSE)
+						{
+							if (p.state() == VALID_CMD)
+							{
+								if(DEBUG)
+								{
+									std::cout << "Raphael does not know what to print, meow" << std::endl;
+								}
+								Command	cmd(_data);
+								cmd.execute_cmd(_iter->fd, p.out());
+								cmd.reset();
+								p.reset();
+							}
+							else
+							{
+								p.skip_cmd();
+								p.reset();
+							}
+							p.parse();
+						}
+						_iter++;
+					}
+					catch (std::runtime_error& e) {
+						std::cerr << e.what() << std::endl;
+						close(_iter->fd);
+						_data->delete_user(_iter->fd);
+						del_from_pfds(_iter);
+					}
 				}
 				else
 					++_iter;
