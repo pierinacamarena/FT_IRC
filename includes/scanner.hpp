@@ -31,7 +31,6 @@ class	scanner {
 			_count = recv(_fd, _buff, BUFFSIZE, 0);
 			if (_count < 0 && (errno != EAGAIN && errno != EWOULDBLOCK))
 			{
-				std::cout << "errno: " << errno << "eagain" << EAGAIN << std::endl;
  				perror("read");
 				throw std::runtime_error("read failed");
 			}
