@@ -6,22 +6,11 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/05 15:00:46 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/05 16:42:15 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define RPL_WELCOME 001
-#define ERR_UNKNOWNCOMMAND 421
-#define ERR_NONICKNAMEGIVEN 431
-#define ERR_ERRONEUSNICKNAME 432
-#define ERR_NICKNAMEINUSE 433
-#define ERR_NOTREGISTERED 451
-#define ERR_NEEDMOREPARAMS 461
-#define ERR_ALREADYREGISTRED 462
-#define ERR_PASSWDMISMATCH 464
-#define ERR_RESTRICTED 484
 
-#include "headers.hpp"
 #include "Reply.hpp"
 void	error_caller(int reply_id, std::vector<int> dest_fds, std::string &command, std::string &identifyer)
 {
@@ -64,7 +53,7 @@ void	error_caller(int reply_id, std::vector<int> dest_fds, std::string &command,
 		for (; it != dest_fds.end(); ++it)
 			err_need_moreparams(*it, command, identifyer);
 		break;
-	case ERR_ALREADYREGISTRED: 
+	case ERR_ALREADYREGISTERED: 
 		// std::vector<int>::iterator it = dest_fds.begin();
 		it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
