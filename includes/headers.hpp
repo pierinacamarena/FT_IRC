@@ -26,4 +26,8 @@
 #define DEBUG 0
 #endif
 
+
+
+typedef std::vector<struct pollfd>::iterator pfd_iter;
+
 #endif
