@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/26 19:47:15 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/02/27 22:18:31 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/01 21:51:58 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ SocketServer::SocketServer(const char *port) : _port(port)
 	int status;
 	if ((status = getaddrinfo(NULL, _port, &hints, &servinfo)) != 0)
 	{
+		std::cout << "here" << std::endl;
 		perror("getaddrinfo:");
 		exit(1);
 	}
@@ -82,3 +83,4 @@ int	SocketServer::get_listener(void) const
 {
 	return listener;
 }
+
