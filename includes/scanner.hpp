@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <iostream>
+#include "headers.hpp"
 
 #define BUFFSIZE 512
 #define _EOF_ -1
@@ -27,7 +28,7 @@ class	scanner {
 	{
 		if (_count == 0)
 		{
-			_count = read(_fd, _buff, BUFFSIZE);
+			_count = recv(_fd, _buff, BUFFSIZE, 0);
 			if (_count < 0)
 				throw std::runtime_error("read failed");
 			else if (_count == 0)
