@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/05 13:47:18 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/05 15:00:46 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,55 +22,65 @@
 #define ERR_RESTRICTED 484
 
 #include "headers.hpp"
-
-void	error_caller(int reply_id, std::vector<int> dest_fds, std::string &command)
+#include "Reply.hpp"
+void	error_caller(int reply_id, std::vector<int> dest_fds, std::string &command, std::string &identifyer)
 {
+	std::vector<int>::iterator it = dest_fds.begin();
 	switch (reply_id)
 	{
 	case ERR_UNKNOWNCOMMAND:
-		std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_unknown_command(*it, command);
+			err_unknown_command(*it, command, identifyer);
 		break;
 	case ERR_NONICKNAMEGIVEN:
-		std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_no_nicknamegive(*it);
+			err_no_nicknamegive(*it, identifyer);
 		break;
 	case ERR_ERRONEUSNICKNAME:
-		std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_erroneus_nickname(*it, command);
+			err_erroneus_nickname(*it, command, identifyer);
 		break;
 	case ERR_NICKNAMEINUSE:
-		std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_nickname_inuse(*it, command);
+			err_nickname_inuse(*it, command, identifyer);
 		break;
 	case ERR_NOTREGISTERED:
-		std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_not_registered(*it);
+			err_not_registered(*it, identifyer);
 		break;
 	case ERR_NEEDMOREPARAMS:
-		std::vector<int>::iterator it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_need_moreparams(*it, command);
+			err_need_moreparams(*it, command, identifyer);
 		break;
 	case ERR_ALREADYREGISTRED: 
-			std::vector<int>::iterator it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_already_registered(*it);
+			err_already_registered(*it, identifyer);
 		break;
 	case ERR_PASSWDMISMATCH: 
-		std::vector<int>::iterator it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_passwd_mistmatch(*it);
+			err_passwd_mistmatch(*it, identifyer);
 		break;
 	case ERR_RESTRICTED:
-		std::vector<int>::iterator it = dest_fds.begin();
+		// std::vector<int>::iterator it = dest_fds.begin();
+		it = dest_fds.begin();
 		for (; it != dest_fds.end(); ++it)
-			err_restricted(*it);
+			err_restricted(*it, identifyer);
 		break;
 	default:
 		break;
@@ -78,19 +88,22 @@ void	error_caller(int reply_id, std::vector<int> dest_fds, std::string &command)
 }
 
 
-void	reply_caller(int reply_id, std::vector<int> dest_fds, std::string &command)
+void	reply_caller(int reply_id, std::vector<int> dest_fds, std::string &identifyer)
 {
+	std::vector<int>::iterator iter = dest_fds.begin();
 	switch (reply_id)
 	{
 	case RPL_WELCOME:
-		std::vector<int>::iterator it = dest_fds.begin();
-		for (; it != dest_fds.end(); ++it)
-			err_unknown_command(*it, command);
+		// std::vector<int>::iterator it = dest_fds.begin();
+		iter = dest_fds.begin();
+		for (; iter != dest_fds.end(); ++iter)
+			rpl_welcome_message(*iter, identifyer);
 		break;
 	default:
 		break;
 	}
 }
+
 //pass
 
 //    ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
@@ -212,130 +225,130 @@ void	reply_caller(int reply_id, std::vector<int> dest_fds, std::string &command)
 // ERRORS
 
 //
-void	err_unknown_command(int dest_fd, const std::string &command)
+void	err_unknown_command(int dest_fd, const std::string &command, std::string &identifyer)
 {
-	std::string err_message = command + " :Unknown command";
+	std::string err_message = identifyer + "'\'" + command + " :Unknown command";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //461
-void	err_need_moreparams(int dest_fd, const std::string &command)
+void	err_need_moreparams(int dest_fd, const std::string &command, std::string &identifyer)
 {
-	std::string err_message = command + " :Not enough parameters";
+	std::string err_message = identifyer + "'\'" + command + " :Not enough parameters";
 	
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //462
-void	err_already_registered(int dest_fd)
+void	err_already_registered(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = ":Unauthorized command (alredy registered)";
+	std::string err_message = identifyer + ":Unauthorized command (alredy registered)";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":Unauthorized command (alredy registered)"
 }
 
-void	err_not_registered(int dest_fd)
+void	err_not_registered(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = ":You have not registered";
+	std::string err_message = identifyer + ":You have not registered";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //431
-void	err_no_nicknamegive(int dest_fd)
+void	err_no_nicknamegive(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = ":No nickname given";
+	std::string err_message = identifyer + ":No nickname given";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":No nickname given"
 }
 
 // 432
-void	err_erroneus_nickname(int dest_fd, std::string &nickname)
+void	err_erroneus_nickname(int dest_fd, std::string &nickname, std::string &identifyer)
 {
-	std::string err_message = nickname + " :Erroneus nickname";
+	std::string err_message = identifyer + nickname + " :Erroneus nickname";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// "<nick> :Erroneus nickname"
 }
 // 433
-void	err_nickname_inuse(int dest_fd, std::string &nickname)
+void	err_nickname_inuse(int dest_fd, std::string &nickname, std::string &identifyer)
 {
-	std::string err_message = nickname + " :Nickname is already in use";
+	std::string err_message = identifyer + nickname + " :Nickname is already in use";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// "<nick> :Nickname is already in use"
 }
 // 484
-void	err_restricted(int dest_fd)
+void	err_restricted(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = " :Your connection is restricted!";
+	std::string err_message = identifyer + " :Your connection is restricted!";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":Your connection is restricted!"
 }
 // 491
-void	err_nooperhost(int dest_fd)
+void	err_nooperhost(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = ":No O-lines for your host";
+	std::string err_message = identifyer + ":No O-lines for your host";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 // 464
-void	err_passwd_mistmatch(int dest_fd)
+void	err_passwd_mistmatch(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = ":Password incorrect";
+	std::string err_message = identifyer + ":Password incorrect";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 // 501
-void	err_umode_unknownflag(int dest_fd)
+void	err_umode_unknownflag(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = " :Unknown MODE flag";
+	std::string err_message = identifyer + " :Unknown MODE flag";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 502
-void	err_users_dontmatch(int dest_fd)
+void	err_users_dontmatch(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = " :Cannot change mode for other users";
+	std::string err_message = identifyer + " :Cannot change mode for other users";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 473
-void	err_invite_onlychan(int dest_fd, std::string &channel)
+void	err_invite_onlychan(int dest_fd, std::string &channel, std::string &identifyer)
 {
-	std::string err_message = channel + " :Cannot join channel (+i)";
+	std::string err_message = identifyer + channel + " :Cannot join channel (+i)";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 471
-void	err_channel_isfull(int dest_fd, std::string &channel)
+void	err_channel_isfull(int dest_fd, std::string &channel, std::string &identifyer)
 {
-	std::string err_message = channel + " :Cannot join channel (+l)";
+	std::string err_message = identifyer + channel + " :Cannot join channel (+l)";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 403
-void	err_nosuch_channel(int dest_fd, std::string &channel)
+void	err_nosuch_channel(int dest_fd, std::string &channel, std::string &identifyer)
 {
-	std::string err_message = channel + " :No such channel";
+	std::string err_message = identifyer + channel + " :No such channel";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 407
-void	err_toomany_targets(int dest_fd, std::string &target)
+void	err_toomany_targets(int dest_fd, std::string &target, std::string &identifyer)
 {
-	std::string err_message = target + " :No such channel";
+	std::string err_message = identifyer + target + " :No such channel";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //replies
 
 
-void	rpl_welcome_message(int dest_fd, std::string &nickname)
+void	rpl_welcome_message(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = "Welcome to the Internet Relay Network" + nickname "!<user>@<host>";
+	std::string err_message = "Welcome to the Internet Relay Network" + identifyer;
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 381
-void	rpl_youreoper(int dest_fd)
+void	rpl_youreoper(int dest_fd, std::string &identifyer)
 {
-	std::string err_message = " :You are now an IRC operator";
+	std::string err_message = identifyer + " :You are now an IRC operator";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
-// void	rpl_umodeis(int dest_fd, const std::string &user, const std::string &mode)
-// {
-// 	std::string err_message = " :You are now an IRC operator";
-// 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
-// }
+void	rpl_umodeis(int dest_fd, const std::string &user, std::string &identifyer)
+{
+	std::string err_message = identifyer + user + " MODE string";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+}
 
