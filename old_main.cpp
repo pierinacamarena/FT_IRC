@@ -44,8 +44,8 @@
 // {
 // 	(void)av;
 // 	int	listener, new_fd;
-// 	struct sockaddr_storage	client_address;
-// 	socklen_t size_c_address;
+// 	struct sockaddr_storage	c_addr;
+// 	socklen_t size_c_addr;
 // 	char buff[256];
 // 	char remoteIP[INET6_ADDRSTRLEN];
 
@@ -86,10 +86,10 @@
 // 				if (pfds[i].fd == listener)
 // 				{
 // 					std::cout << "i am in the listener" << std::endl;
-// 					size_c_address = sizeof(client_address);
+// 					size_c_addr = sizeof(c_addr);
 // 					new_fd = accept(listener, 
-// 					(struct sockaddr *)&client_address, 
-// 					&size_c_address);
+// 					(struct sockaddr *)&c_addr, 
+// 					&size_c_addr);
 
 // 					if (new_fd == -1)
 // 						perror("accept");
@@ -100,7 +100,7 @@
 // 						add_to_pfds(&pfds, new_fd, &fd_count, &fd_size);
 // 						std::cout << "___________________" << std::endl;
 // 						std::cout << "i: " << i << " pfds[i+1].fd: " << pfds[i+1].fd << " pfds[i].revents: " << pfds[i+1].revents << std::endl;
-// 						std::cout << "pollserver: new connection from " << inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remoteIP, INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
+// 						std::cout << "pollserver: new connection from " << inet_ntop(c_addr.ss_family, get_in_addr((struct sockaddr*)&c_addr), remoteIP, INET6_ADDRSTRLEN) << " on socket: " << new_fd << std::endl;
 
 // 					}
 // 				}
