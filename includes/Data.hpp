@@ -56,11 +56,12 @@ struct	Client {
 	std::string					_nickname;
 	std::string					_username;
 	std::string					_hostname;
+	std::string					_hostaddress;
 	std::string					_realname;
 	std::set<std::string>		_channels;
 	int							_mode;
 
-	Client(const std::string& hostname) : _state(UNREGISTERED_STATE), _hostname(hostname), _mode(0) { }
+	Client(const std::string& hostname, const std::string& hostaddress) : _state(UNREGISTERED_STATE), _hostname(hostname), _hostaddress(hostaddress), _mode(0) { }
 
 };
 
@@ -105,9 +106,9 @@ class	Data {
 		// modifiers
 
 			//user operations
-		void	add_user(int fd, const std::string& hostname)
+		void	add_user(int fd, const std::string& hostname, const std::string& hostaddress)
 		{
-			_clients.insert(std::make_pair(fd, Client(hostname)));
+			_clients.insert(std::make_pair(fd, Client(hostname, hostaddress)));
 		}
 
 		void	delete_user(int fd)
