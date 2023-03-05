@@ -18,9 +18,9 @@ void Server::add_to_pfds(int new_fd)
 	_pfds.back().revents = 0;
 }
 
-void Server::del_from_pfds(int i)
+void Server::del_from_pfds(pfd_iter iter)
 {
-	_pfds.erase(_pfds.begin() + i);
+	_pfds.erase(iter);
 }
 
 int	Server::get_fd(int i)
@@ -35,7 +35,7 @@ void	*Server::get_in_addr(struct sockaddr *sa)
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-void	Server::accept_connection(size_t location)
+int	Server::accept_connection(size_t location)
 {
 	char					remoteIP[INET6_ADDRSTRLEN];
 	char 					host[NI_MAXHOST];
@@ -48,7 +48,10 @@ void	Server::accept_connection(size_t location)
 	size_c_addr = sizeof(c_addr);
 	new_fd = accept(_listener, (struct sockaddr *)&c_addr, &size_c_addr);
 	if (new_fd == -1)
+	{
 		perror("accept");
+		return (-1);
+	}
 	else
 	{
 		if (DEBUG)
@@ -72,21 +75,31 @@ void	Server::accept_connection(size_t location)
 			perror("getnameinfo: ");
 		else
 			std::cout << "Hostname: " << host << std::endl;
-		_clients[new_fd] = new Client(new_fd, remoteIP, host);
+		// _clients[new_fd] = new Client(new_fd, remoteIP, host);
+		
 		add_to_pfds(new_fd);
+		if ((fcntl(new_fd, F_SETFL, O_NONBLOCK)) < 0)
+			{
+				perror("fcntl: ");
+				exit(1);
+			}
 		std::cout << "pollserver: new connection from " << remoteIP << " on socket: " << new_fd << std::endl;
-
+		return (new_fd);
 	}
 }
 
-void	Server::receive_send_data(size_t location)
+int	Server::receive_send_data(pfd_iter iter)
 {
 	if (DEBUG)
 		std::cout << "I am in the client" << std::endl;
 	int	numbytes;
-	int	sender_fd = receive_data(location, &numbytes);
-	if (numbytes > 0)
+	int	sender_fd = receive_data(iter, &numbytes);
+	if (numbytes > 0 && sender_fd != -1)
+	{
 		send_data(numbytes, sender_fd);
+		return (0);
+	}
+	return (-1);
 }
 
 void	Server::send_data(int numbytes, int sender_fd)
@@ -102,20 +115,20 @@ void	Server::send_data(int numbytes, int sender_fd)
 	}
 }
 
-int		Server::receive_data(size_t location, int *numbytes)
+int		Server::receive_data(pfd_iter iter, int *numbytes)
 {
-	*numbytes = recv(_pfds[location].fd, buff, sizeof(buff), 0);
-	int sender_fd = _pfds[location].fd;
+	*numbytes = recv(iter->fd, buff, sizeof(buff), 0);
 	if (*numbytes <= 0)
 	{
 		if (*numbytes == 0)
-			std::cout << "pollserver: socket " << sender_fd << " hung up" << std::endl;
+			std::cout << "pollserver: socket " << iter->fd << " hung up" << std::endl;
 		else
 			perror("recv:");
-		close(sender_fd);
-		del_from_pfds(location);
+		close(iter->fd);
+		del_from_pfds(iter);
+		return (-1);
 	}
-	return (sender_fd);
+	return (iter->fd);
 }
 
 
@@ -130,7 +143,7 @@ void	Server::run()
 	}
 	while (1)
 	{
-		int poll_count = poll(&_pfds[0], _pfds.size(), -1);
+		int poll_count = poll(&_pfds[0], _pfds.size(), 50000);
 
 		if (poll_count == -1)
 		{
@@ -139,23 +152,23 @@ void	Server::run()
 		}
 		if (DEBUG)
 			std::cout << "poll is: " << poll_count << std::endl;
-		for (size_t i = 0; i < _pfds.size(); i++)
+		if (_pfds[0].revents == POLLIN)
+			accept_connection(0);
+		else
 		{
-			if (DEBUG)
-				std::cout << "i: " << i << " pfds[i].fd: " << _pfds[i].fd << "pfds[i].revents: " << _pfds[i].revents << std::endl;
-			if (_pfds[i].revents & POLLIN)
+			std::vector<struct pollfd>::iterator _iter = _pfds.begin();
+			int	ret;
+			while (_iter != _pfds.end())
 			{
-				if (_pfds[i].fd == _listener)
-					accept_connection(i);
+				if ( _iter->revents == POLLIN)
+				{
+					ret = receive_send_data(_iter);
+					if (ret == 0)
+						++_iter;
+				}
 				else
-					receive_send_data(i); //on the client
+					++_iter;
 			}
-		}
-		if (DEBUG)
-		{
-			std::cout << "_________________" << std::endl;
-			std::cout << "left for loop" << std::endl;
-			std::cout << "_________________" << std::endl;
 		}
 	}
 }
