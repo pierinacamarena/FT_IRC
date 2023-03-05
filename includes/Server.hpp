@@ -2,7 +2,8 @@
 #define _SERVER_HPP_
 
 #include "SocketServer.hpp"
-#include "Client.hpp"
+#include "Data.hpp"
+#include "Command.hpp"
 
 class Server
 {
@@ -12,12 +13,14 @@ class Server
 		char								buff[256];
 		std::string 						_password;
 		std::map<int, Client*>				_clients;
+		char								remoteIP[INET6_ADDRSTRLEN];
+		char 								host[NI_MAXHOST];
+
 		// std::map<std::string, Channel*>		_channels;
-
-
+		Data								*_data;
 	public:
 	
-	Server(int listener, std::string password);
+	Server(int listener, Data* data);
 
 	void add_to_pfds(int new_fd);
 
