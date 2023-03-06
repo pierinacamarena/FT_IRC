@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/06 15:17:07 by rbourdil         ###   ########.fr       */
+/*   Updated: 2023/03/06 16:14:03 by rbourdil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,30 +53,22 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::string
 		for (; it != dest_fds.end(); ++it)
 			err_restricted(*it, identifyer);
 		break;
+	case ERR_USERSDONTMATCH:
+		for (; it != dest_fds.end(); ++it)
+			err_users_dontmatch(*it);
 	case RPL_WELCOME:
 		for (; it != dest_fds.end(); ++it)
 			rpl_welcome_message(*it, identifyer);
-	default:
 		break;
-	}
-}
-
-
-void	reply_caller(int reply_id, std::vector<int> dest_fds, std::string &identifyer)
-{
-	std::vector<int>::iterator iter = dest_fds.begin();
-	switch (reply_id)
-	{
-	case RPL_WELCOME:
-		// std::vector<int>::iterator it = dest_fds.begin();
-		iter = dest_fds.begin();
-		for (; iter != dest_fds.end(); ++iter)
-			rpl_welcome_message(*iter, identifyer);
+	case RPL_UMODEIS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_umodeis(*it, identifyer);
 		break;
 	default:
 		break;
 	}
 }
+
 
 //pass
 
@@ -275,9 +267,9 @@ void	err_umode_unknownflag(int dest_fd, const std::string &identifyer)
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 502
-void	err_users_dontmatch(int dest_fd, const std::string &identifyer)
+void	err_users_dontmatch(int dest_fd)
 {
-	std::string err_message = identifyer + " :Cannot change mode for other users\n";
+	std::string err_message = ":Cannot change mode for other users\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 473
@@ -320,9 +312,9 @@ void	rpl_youreoper(int dest_fd, const std::string &identifyer)
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
-void	rpl_umodeis(int dest_fd, const std::string &user, const std::string &identifyer)
+void	rpl_umodeis(int dest_fd, const std::string &identifyer)
 {
-	std::string err_message = identifyer + user + " MODE string\n";
+	std::string err_message = identifyer + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 

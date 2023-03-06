@@ -190,7 +190,7 @@ void	Server::run()
 				}
 				else
 				{
-					std::cout << std::string(buff, buff + count) << std::endl;
+					std::cout << "<= " << std::string(buff, buff + count);
 					parser	p(buff, count);
 					// ret = receive_send_data(_iter);
 					p.parse();

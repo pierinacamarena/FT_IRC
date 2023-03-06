@@ -56,14 +56,10 @@ class parser {
 		{
 			while (_current != EOF_TOKEN)
 			{
-				if (_current == '\r')
+				if (_current == '\n')
 				{
 					_current = get_token(_scan);
-					if (_current == '\n')
-					{
-						_current = get_token(_scan);
-						break ;
-					}
+					break ;
 				}
 			}
 		}

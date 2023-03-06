@@ -35,8 +35,7 @@ void	parser::get_params(void)
 		match(' ');
 		if (_current == ':')
 			match(':');
-		get_trailing();
-	}
+		get_trailing(); }
 }
 
 void	parser::get_trailing(void)
@@ -55,13 +54,11 @@ void	parser::get_trailing(void)
 
 void	parser::get_crlf(void)
 {
-	match('\r');
 	match('\n');
 }
 	
 void	parser::parse(void)
 {
-	std::cerr << _current << std::endl;
 	if (_current == EOF_TOKEN)
 	{
 		_panic = true;
@@ -69,7 +66,7 @@ void	parser::parse(void)
 	}
 	if (_current == ':')
 		get_prefix();
-	else if (_current != '\r')
+	else if (_current != '\n')
 		get_cmd();
 	get_crlf();
 }
