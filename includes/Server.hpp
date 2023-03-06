@@ -12,7 +12,6 @@ class Server
 		std::vector<struct pollfd>			_pfds;
 		int 								_listener;
 		char								buff[256];
-		std::string 						_password;
 		std::map<int, Client*>				_clients;
 		char								remoteIP[INET6_ADDRSTRLEN];
 		char 								host[NI_MAXHOST];

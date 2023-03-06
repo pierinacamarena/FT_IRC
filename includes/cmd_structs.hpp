@@ -13,9 +13,9 @@ struct	irc_cmd {
 
 struct	Reply {
 
-	int				_rplnum;
-	std::set<int>	_dest;
-	std::string		_arg;
+	int							_rplnum;
+	std::set<int>				_dest;
+	std::vector<std::string>	_args;
 
 	Reply(void) : _rplnum(0) { }
 

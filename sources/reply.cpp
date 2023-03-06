@@ -6,63 +6,63 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/06 16:14:03 by rbourdil         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:33:20 by rbourdil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "Reply.hpp"
-void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::string &command, const std::string &identifyer)
+void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector<std::string>& args)
 {
 	std::set<int>::const_iterator it = dest_fds.begin();
 	switch (reply_id)
 	{
 	case ERR_UNKNOWNCOMMAND:
 		for (; it != dest_fds.end(); ++it)
-			err_unknown_command(*it, command);
+			err_unknown_command(*it, args);
 		break;
 	case ERR_NONICKNAMEGIVEN:
 		for (; it != dest_fds.end(); ++it)
-			err_no_nicknamegive(*it, identifyer);
+			err_no_nicknamegive(*it, args);
 		break;
 	case ERR_ERRONEUSNICKNAME:
 		for (; it != dest_fds.end(); ++it)
-			err_erroneus_nickname(*it, command, identifyer);
+			err_erroneus_nickname(*it, args);
 		break;
 	case ERR_NICKNAMEINUSE:
 		for (; it != dest_fds.end(); ++it)
-			err_nickname_inuse(*it, command, identifyer);
+			err_nickname_inuse(*it, args);
 		break;
 	case ERR_NOTREGISTERED:
 		for (; it != dest_fds.end(); ++it)
-			err_not_registered(*it, identifyer);
+			err_not_registered(*it, args);
 		break;
 	case ERR_NEEDMOREPARAMS:
 		for (; it != dest_fds.end(); ++it)
-			err_need_moreparams(*it, command);
+			err_need_moreparams(*it, args);
 		break;
 	case ERR_ALREADYREGISTERED: 
 		for (; it != dest_fds.end(); ++it)
-			err_already_registered(*it, identifyer);
+			err_already_registered(*it, args);
 		break;
 	case ERR_PASSWDMISMATCH: 
 		for (; it != dest_fds.end(); ++it)
-			err_passwd_mistmatch(*it, identifyer);
+			err_passwd_mistmatch(*it, args);
 		break;
 	case ERR_RESTRICTED:
 		for (; it != dest_fds.end(); ++it)
-			err_restricted(*it, identifyer);
+			err_restricted(*it, args);
 		break;
 	case ERR_USERSDONTMATCH:
 		for (; it != dest_fds.end(); ++it)
-			err_users_dontmatch(*it);
+			err_users_dontmatch(*it, args);
 	case RPL_WELCOME:
 		for (; it != dest_fds.end(); ++it)
-			rpl_welcome_message(*it, identifyer);
+			rpl_welcome_message(*it, args);
 		break;
 	case RPL_UMODEIS:
 		for (; it != dest_fds.end(); ++it)
-			rpl_umodeis(*it, identifyer);
+			rpl_umodeis(*it, args);
 		break;
 	default:
 		break;
@@ -191,24 +191,26 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::string
 // ERRORS
 
 //
-void	err_unknown_command(int dest_fd, const std::string &command)
+void	err_unknown_command(int dest_fd, const std::vector<std::string> args)
 {
-	std::string err_message = command + " :Unknown command\n";
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " " + args[2] + " :Unknown command\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //461
-void	err_need_moreparams(int dest_fd, const std::string &command)
+void	err_need_moreparams(int dest_fd, const std::vector<std::string> args)
 {
-	std::string err_message = command + " :Not enough parameters\n";
-	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :Not enough parameters\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //462
 void	err_already_registered(int dest_fd, const std::string &identifyer)
 {
-	std::string err_message = identifyer + ":Unauthorized command (alredy registered)\n";
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = " :Unauthorized command (already registered)\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":Unauthorized command (alredy registered)"
 }

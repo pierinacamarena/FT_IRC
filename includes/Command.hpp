@@ -20,7 +20,11 @@ class	Command {
 
 		void	set_rplnum(int rplnum)
 		{
+			std::stringstream	ss;
+
+			ss << rplnum;
 			_rpl._rplnum = rplnum;
+			add_arg(ss.str());
 		}
 
 		void	add_dest(int dest)
@@ -28,9 +32,9 @@ class	Command {
 			_rpl._dest.insert(dest);
 		}
 
-		void	set_arg(const std::string& arg)
+		void	add_arg(const std::string& arg)
 		{
-			_rpl._arg = arg;
+			_rpl._args.push_back(arg);
 		}
 
 		void	pass(int fd, const std::vector<std::string>& params)
@@ -48,7 +52,7 @@ class	Command {
 				if (_data->is_registered(fd))
 				{
 					set_rplnum(RPL_WELCOME);
-					set_arg(_data->get_user_info(fd));
+					add_arg(_data->get_user_info(fd));
 				}
 			}
 		}
@@ -61,12 +65,12 @@ class	Command {
 			else if (!valid_nickname(params[0]))
 			{
 				set_rplnum(ERR_ERRONEUSNICKNAME);
-				set_arg(params[0]);
+				add_arg(params[0]);
 			}
 			else if (_data->nickname_exists(params[0]))
 			{
 				set_rplnum(ERR_NICKNAMEINUSE);
-				set_arg(params[0]);
+				add_arg(params[0]);
 			}
 			else if (_data->check_user_flags(fd, RESTRICTED_UFLAG))
 				set_rplnum(ERR_RESTRICTED);
@@ -77,7 +81,7 @@ class	Command {
 				if (_data->is_registered(fd))
 				{
 					set_rplnum(RPL_WELCOME);
-					set_arg(_data->get_user_info(fd));
+					add_arg(_data->get_user_info(fd));
 				}
 			}
 		}
@@ -103,7 +107,7 @@ class	Command {
 				if (_data->is_registered(fd))
 				{
 					set_rplnum(RPL_WELCOME);
-					set_arg(_data->get_user_info(fd));
+					add_arg(_data->get_user_info(fd));
 				}
 			}
 		}
@@ -120,7 +124,7 @@ class	Command {
 			else if (params.size() == 1)
 			{
 				set_rplnum(RPL_UMODEIS);
-				set_arg(mode_str(fd));
+				add_arg(mode_str(fd));
 			}
 			else if (!valid_mode(params[1]))
 				set_rplnum(ERR_UMODEUNKNOWNFLAG);
@@ -162,15 +166,8 @@ class	Command {
 				else
 					_data->unset_user_flags(fd, flags);
 				set_rplnum(RPL_UMODEIS);
-				set_arg(mode_str(fd));
+				add_arg(mode_str(fd));
 			}
-		}
-
-		void	cap(int fd, const std::vector<std::string>& params)
-		{
-			(void)params;
-			add_dest(fd);
-			set_rplnum(0);
 		}
 
 		// helper functions
@@ -189,11 +186,14 @@ class	Command {
 
 		Command(Data* data) : _data(data)
 		{
+			// add srvname
+			add_arg(_data->get_srvname());
+
+			// add commands to the command tree
 			_cmd_map.insert(std::make_pair("PASS", &Command::pass));
 			_cmd_map.insert(std::make_pair("NICK", &Command::nick));
 			_cmd_map.insert(std::make_pair("USER", &Command::user));
 			_cmd_map.insert(std::make_pair("MODE", &Command::mode));
-			_cmd_map.insert(std::make_pair("CAP", &Command::cap)); // dummy command
 		}
 
 		Reply	out(void) const
@@ -205,7 +205,7 @@ class	Command {
 		{
 			_rpl._rplnum = 0;
 			_rpl._dest.clear();
-			_rpl._arg.clear();
+			_rpl._args.clear();
 		}
 
 		void	execute_cmd(int fd, const irc_cmd& cmd)
@@ -217,7 +217,7 @@ class	Command {
 			else
 			{
 				add_dest(fd);
-				set_arg(cmd._cmd);
+				add_arg(cmd._cmd);
 				set_rplnum(ERR_UNKNOWNCOMMAND);
 			}
 		}

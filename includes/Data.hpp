@@ -87,6 +87,7 @@ class	Data {
 
 	private:
 
+		const std::string	_srvname;
 		const std::string	_passwd;
 // used to lookup by nickname
 		std::map<std::string, int>	_nick_to_fd;
@@ -101,7 +102,7 @@ class	Data {
 	public:
 
 		// constructor
-		explicit Data(const char* passwd) : _passwd(passwd) { }
+		explicit Data(const std::string& srvname, const char* passwd) : _srvname(srvname), _passwd(passwd) { }
 
 		// modifiers
 
@@ -274,6 +275,11 @@ class	Data {
 
 
 		// lookup
+		
+		const std::string&	get_srvname(void) const
+		{
+			return (_srvname);
+		}
 
 			// user lookup
 		bool	compare_passwd(const std::string& passwd) const
