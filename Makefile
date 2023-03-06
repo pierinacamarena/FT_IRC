@@ -12,7 +12,8 @@ CC		= clang++
 FLAGS	= -g3 -Wall -Wextra -Werror -std=c++98
 
 SRCS	= $(wildcard ./sources/*.cpp)
-INCS	= $(wildcard ./includes/*.hpp)
+INCS    = $(wildcard ./includes/*.hpp) $(wildcard ./includes/*/*.hpp)
+# INCS	= $(wildcard ./includes/*.hpp)
 
 INCPATH = -I./includes -I.
 OBJ_DIR	= obj
@@ -25,7 +26,7 @@ $(NAME) : $(OBJS)
 	$(CC) $(FLAGS) -o $@ $^
 
 $(OBJ_DIR)/%.o: ./sources/%.cpp
-	$(CC) $(FLAGS) -o $@ -c $< $(INCPATH)
+	$(CC) $(FLAGS) -MMD -o $@ -c $< $(INCPATH)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
@@ -41,26 +42,27 @@ re: fclean all
 debug: 
 	$(MAKE) FLAGS+='-DDEBUG=1' all
 
+-include $(OBJ_DIR)/*.d
 
 rambo:
-	echo '                      /^--^\     /^--^\     /^--^\'
-	echo '                      \____/     \____/     \____/'
-	echo '                     /      \   /      \   /      \'
-	echo '                    |        | |        | |        |'
-	echo '                     \__  __/   \__  __/   \__  __/'
-	echo '|^|^|^|^|^|^|^|^|^|^|^|^\ \^|^|^|^/ /^|^|^|^|^\ \^|^|^|^|^|^|^|^|^|^|^|^|'
-	echo '| | | | | | | | | | | | |\ \| | |/ /| | | | | | \ \ | | | | | | | | | | |'
-	echo '| | | | | | | | | | | | / / | | |\ \| | | | | |/ /| | | | | | | | | | | |'
-	echo '| | | | | | | | | | | | \/| | | | \/| | | | | |\/ | | | | | | | | | | | |'
-	echo '                                                                         '
-	echo '                .........   .......   ..........                         '
-	echo '                    .       .     .   .                                  '
-	echo '                    .       .......   .                                  '
-	echo '                    .       . .       .                                  '
-	echo '                    .       .   .     .                                  '
-	echo '                .........   .     .   ..........                         '
-	echo '                                                                         '
-	echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
-	echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
+	@echo '                      /^--^\     /^--^\     /^--^\'
+	@echo '                      \____/     \____/     \____/'
+	@echo '                     /      \   /      \   /      \'
+	@echo '                    |        | |        | |        |'
+	@echo '                     \__  __/   \__  __/   \__  __/'
+	@echo '|^|^|^|^|^|^|^|^|^|^|^|^\ \^|^|^|^/ /^|^|^|^|^\ \^|^|^|^|^|^|^|^|^|^|^|^|'
+	@echo '| | | | | | | | | | | | |\ \| | |/ /| | | | | | \ \ | | | | | | | | | | |'
+	@echo '| | | | | | | | | | | | / / | | |\ \| | | | | |/ /| | | | | | | | | | | |'
+	@echo '| | | | | | | | | | | | \/| | | | \/| | | | | |\/ | | | | | | | | | | | |'
+	@echo '                                                                         '
+	@echo '                .........   .......   ..........                         '
+	@echo '                    .       .     .   .                                  '
+	@echo '                    .       .......   .                                  '
+	@echo '                    .       . .       .                                  '
+	@echo '                    .       .   .     .                                  '
+	@echo '                .........   .     .   ..........                         '
+	@echo '                                                                         '
+	@echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
+	@echo '| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |'
 
 .PHONY: all clean fclean re rambo debug
