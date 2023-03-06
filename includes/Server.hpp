@@ -4,6 +4,7 @@
 #include "SocketServer.hpp"
 #include "Data.hpp"
 #include "Command.hpp"
+#include "Reply.hpp"
 
 class Server
 {

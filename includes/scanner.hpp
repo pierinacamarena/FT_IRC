@@ -11,49 +11,35 @@
 
 class	scanner {
 
-	int			_fd;
-	char		_buff[BUFFSIZE];
-	char*		_current;
+	const char*	_start;
+	const char*	_current;
 	ssize_t		_count;
 
 	public:
 
-	scanner(int fd) :
-		_fd(fd),
-		_current(NULL),
-		_count(0)
+	scanner(const char* buff, ssize_t count) :
+		_start(buff),
+		_current(buff),
+		_count(count)
 		{ }
 
 	int	get(void)
 	{
 		if (_count == 0)
-		{
-			_count = recv(_fd, _buff, BUFFSIZE, 0);
-			if (_count < 0 && (errno != EAGAIN && errno != EWOULDBLOCK))
-			{
- 				perror("read");
-				throw std::runtime_error("read failed");
-			}
-			else if (_count <= 0)
-				return (_EOF_);
-			_current = _buff;
-		}
+			return (_EOF_);
 		_count--;
 		return (*_current++);
 	}
 
 	void	unget(void)
 	{
-		if (_current >= _buff)
-		{
-			_current--;	
-			_count++;
-		}
+		_current--;	
+		_count++;
 	}
 
 	size_t	count(void)
 	{
-		return (_current - _buff);
+		return (_current - _start);
 	}
 
 };

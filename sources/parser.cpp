@@ -55,20 +55,19 @@ void	parser::get_trailing(void)
 
 void	parser::get_crlf(void)
 {
-	match('\r');
 	match('\n');
 }
 	
 void	parser::parse(void)
 {
-	if (_current == EOF_TOKEN)
+	if (_current == EOF_TOKEN || _current == '\n')
 	{
 		_panic = true;
 		return;
 	}
 	if (_current == ':')
 		get_prefix();
-	else if (_current != '\r')
+	else if (_current != '\n')
 		get_cmd();
 	get_crlf();
 }
@@ -94,6 +93,22 @@ bool	valid_nickname(const std::string& nick)
 			break ;
 	}
 	if (it != nick.end())
+		return (false);
+	return (true);
+}
+
+bool	valid_username(const std::string& user)
+{
+	std::string::const_iterator	it = user.begin();
+
+	if (user.empty())
+		return (false);
+	for (; it != user.end(); it++)
+	{
+		if (*it == '@')
+			break;
+	}
+	if (it != user.end())
 		return (false);
 	return (true);
 }

@@ -89,6 +89,8 @@ class	Command {
 				set_rplnum(ERR_ALREADYREGISTERED);
 			else if (params.size() < 4)
 				set_rplnum(ERR_NEEDMOREPARAMS);
+			else if (!valid_username(params[0]))
+				set_rplnum(0);
 			else
 			{
 				_data->add_username(fd, params[0]);

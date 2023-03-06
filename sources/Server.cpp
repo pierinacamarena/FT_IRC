@@ -1,4 +1,6 @@
 #include "../includes/Server.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
 
 Server::Server(int listener, Data *data) : _listener(listener), _data(data)
 {
@@ -128,6 +130,8 @@ int		Server::receive_data(pfd_iter iter, int *numbytes)
 
 void	Server::run()
 {
+	char	buff[512];
+
 	if (DEBUG)
 	{
 		std::cout << "___________________" << std::endl;
@@ -144,62 +148,77 @@ void	Server::run()
 			perror("poll:");
 			exit(1);
 		}
-		if (DEBUG)
+		else if (poll_count == 0)
+		{
+			std::cerr << "poll timed out" << std::endl;
+			continue;
+		}	
 			std::cout << "poll is: " << poll_count << std::endl;
-		if (_pfds[0].revents == POLLIN)
+		if (_pfds[0].revents & POLLIN)
 		{
 			int fd = accept_connection(0);
 			_data->add_user(fd, host, remoteIP);
 		}
-		else
+		std::vector<struct pollfd>::iterator _iter = _pfds.begin() + 1;
+		while (_iter != _pfds.end())
 		{
-			std::vector<struct pollfd>::iterator _iter = _pfds.begin();
-			while (_iter != _pfds.end())
+			std::cerr << _iter->fd << " event is " << _iter->revents << std::endl;
+			if (_iter->revents == 0)
 			{
-				if (_iter->revents == POLLHUP)
+				++_iter;
+				continue;
+			}
+			if ( _iter->revents & POLLIN)
+			{
+				ssize_t	count = recv(_iter->fd, buff, 512, 0);
+				if (count < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 				{
-					std::cout << "pollserver: socket " << _iter->fd << " hung up" << std::endl;
-					close(_iter->fd);
-					del_from_pfds(_iter);
+					std::cerr << _iter->fd << " blocking error" << std::endl;
 					_data->delete_user(_iter->fd);
+					close(_iter->fd);
+					_iter = _pfds.erase(_iter);
 				}
-				else if ( _iter->revents == POLLIN)
+				else if (count < 0)
 				{
-					try {
-						parser	p(_iter->fd);
-						// ret = receive_send_data(_iter);
-						p.parse();
-						while (p.state() != STOP_PARSE)
-						{
-							if (p.state() == VALID_CMD)
-							{
-								if(DEBUG)
-								{
-									std::cout << "Raphael does not know what to print, meow" << std::endl;
-								}
-								Command	cmd(_data);
-								cmd.execute_cmd(_iter->fd, p.out());
-								cmd.reset();
-								p.reset();
-							}
-							else
-							{
-								p.skip_cmd();
-								p.reset();
-							}
-							p.parse();
-						}
-						_iter++;
-					}
-					catch (std::runtime_error& e) {
-						std::cerr << e.what() << std::endl;
-						close(_iter->fd);
-						_data->delete_user(_iter->fd);
-						del_from_pfds(_iter);
-					}
+					perror("read");
+					exit(EXIT_FAILURE);
+				}
+				else if (count == 0)
+				{
+					std::cerr << _iter->fd << " close connection" << std::endl;
+					_data->delete_user(_iter->fd);
+					close(_iter->fd);
+					_iter = _pfds.erase(_iter);
 				}
 				else
+				{
+					parser	p(buff, count);
+					// ret = receive_send_data(_iter);
+					p.parse();
+					while (p.state() != STOP_PARSE)
+					{
+						if (p.state() == VALID_CMD)
+						{
+							Command	exec(_data);
+							Reply	reply;
+							irc_cmd	cmd;
+
+							cmd = p.out();
+							exec.execute_cmd(_iter->fd, cmd);
+							reply = exec.out();
+							error_caller(reply._rplnum, reply._dest, cmd._cmd, reply._arg);
+							exec.reset();
+							p.reset();
+						}
+						else
+						{
+							p.skip_cmd();
+							p.reset();
+						}
+						p.parse();
+					}
 					++_iter;
+				}
 			}
 		}
 	}

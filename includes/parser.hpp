@@ -45,7 +45,7 @@ class parser {
 
 	public:
 
-		parser(int fd) : _scan(fd), _panic(false)
+		parser(const char* buff, ssize_t count) : _scan(buff, count), _panic(false)
 		{
 			_current = get_token(_scan);
 		}
@@ -56,17 +56,11 @@ class parser {
 		{
 			while (_current != EOF_TOKEN)
 			{
-				if (_current == '\r')
+				if (_current == '\n')
 				{
 					_current = get_token(_scan);
-					if (_current == '\n')
-					{
-						_current = get_token(_scan);
-						break;
-					}
+					break ;
 				}
-				if (_current != '\r')
-					_current = get_token(_scan);
 			}
 		}
 
@@ -90,7 +84,8 @@ class parser {
 };
 
 bool	isspecial(int c);
-bool	valid_nickname(const std::string& nick);
-bool	valid_mode(const std::string& mode);
+bool	valid_nickname(const std::string&);
+bool	valid_username(const std::string&);
+bool	valid_mode(const std::string&);
 
 #endif
