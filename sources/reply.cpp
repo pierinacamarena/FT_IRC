@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/06 14:27:15 by rbourdil         ###   ########.fr       */
+/*   Updated: 2023/03/06 15:17:07 by rbourdil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::string
 	{
 	case ERR_UNKNOWNCOMMAND:
 		for (; it != dest_fds.end(); ++it)
-			err_unknown_command(*it, command, identifyer);
+			err_unknown_command(*it, command);
 		break;
 	case ERR_NONICKNAMEGIVEN:
 		for (; it != dest_fds.end(); ++it)
@@ -199,9 +199,9 @@ void	reply_caller(int reply_id, std::vector<int> dest_fds, std::string &identify
 // ERRORS
 
 //
-void	err_unknown_command(int dest_fd, const std::string &command, const std::string &identifyer)
+void	err_unknown_command(int dest_fd, const std::string &command)
 {
-	std::string err_message = identifyer + "'\'" + command + " :Unknown command\n";
+	std::string err_message = command + " :Unknown command\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 

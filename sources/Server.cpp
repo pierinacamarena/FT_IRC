@@ -153,7 +153,6 @@ void	Server::run()
 			std::cerr << "poll timed out" << std::endl;
 			continue;
 		}	
-			std::cout << "poll is: " << poll_count << std::endl;
 		if (_pfds[0].revents & POLLIN)
 		{
 			int fd = accept_connection(0);
@@ -162,7 +161,6 @@ void	Server::run()
 		std::vector<struct pollfd>::iterator _iter = _pfds.begin() + 1;
 		while (_iter != _pfds.end())
 		{
-			std::cerr << _iter->fd << " event is " << _iter->revents << std::endl;
 			if (_iter->revents == 0)
 			{
 				++_iter;
@@ -192,6 +190,7 @@ void	Server::run()
 				}
 				else
 				{
+					std::cout << std::string(buff, buff + count) << std::endl;
 					parser	p(buff, count);
 					// ret = receive_send_data(_iter);
 					p.parse();

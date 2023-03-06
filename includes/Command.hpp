@@ -166,6 +166,13 @@ class	Command {
 			}
 		}
 
+		void	cap(int fd, const std::vector<std::string>& params)
+		{
+			(void)params;
+			add_dest(fd);
+			set_rplnum(0);
+		}
+
 		// helper functions
 
 		std::string	mode_str(int fd)
@@ -186,6 +193,7 @@ class	Command {
 			_cmd_map.insert(std::make_pair("NICK", &Command::nick));
 			_cmd_map.insert(std::make_pair("USER", &Command::user));
 			_cmd_map.insert(std::make_pair("MODE", &Command::mode));
+			_cmd_map.insert(std::make_pair("CAP", &Command::cap)); // dummy command
 		}
 
 		Reply	out(void) const

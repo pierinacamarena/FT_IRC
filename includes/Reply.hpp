@@ -6,7 +6,7 @@
 /*******************************ERRORS***********************************/
 void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::string &command, const std::string &identifyer);
 
-void	err_unknown_command(int dest_fd, const std::string &command, const std::string &identifyer);
+void	err_unknown_command(int dest_fd, const std::string &command);
 void	err_need_moreparams(int dest_fd, const std::string &command);
 void	err_already_registered(int dest_fd, const std::string &identifyer);
 void	err_not_registered(int dest_fd, const std::string &identifyer);
