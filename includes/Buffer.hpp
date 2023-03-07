@@ -12,15 +12,30 @@ struct Buffer {
 		_current = _buff;
 	}
 
+	Buffer(const Buffer& from)
+	{
+		_buff = new char[BUFSIZE];		
+		_current = _buff;
+		for (ssize_t i = 0; i < from.size(); i++)
+			*_current++ = from._buff[i];
+	}
+
+	Buffer&	operator=(const Buffer& from)
+	{
+		_current = _buff;
+		append(from._buff, from.size());
+		return (*this);
+	}
+
 	~Buffer(void)
 	{
-		delete _buff;
+		delete[] _buff;
 	}
 
 	void	append(const char* buff, ssize_t count)
 	{
 		for (ssize_t i = 0; i < count; i++)
-			*_current++ = buff[count];
+			*_current++ = buff[i];
 	}
 
 	ssize_t	size(void) const

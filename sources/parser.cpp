@@ -1,10 +1,6 @@
 #include "parser.hpp"
 
-void	parser::get_prefix(void)
-{
-	match(':');
-	update_prefix();
-	match(WORD_TOKEN);
+void	parser::get_prefix(void) { match(':'); update_prefix(); match(WORD_TOKEN);
 	match(' ');
 	get_cmd();
 }
@@ -59,16 +55,13 @@ void	parser::get_crlf(void)
 	
 void	parser::parse(void)
 {
-	if (_current == EOF_TOKEN)
-	{
-		_panic = true;
-		return;
-	}
 	if (_current == ':')
 		get_prefix();
 	else if (_current != '\n')
 		get_cmd();
 	get_crlf();
+	if (!_panic)
+		_state = VALID_CMD;
 }
 
 bool	isspecial(int c)

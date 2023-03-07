@@ -9,7 +9,7 @@
 
 #define VALID_CMD 256
 #define DUMP_CMD 257
-#define STOP_PARSE 258
+#define INCOMPLETE_CMD 258
 
 class parser {
 
@@ -18,6 +18,7 @@ class parser {
 		scanner	_scan;
 		irc_cmd	_cmd;
 		token	_current;
+		int		_state;
 		bool	_panic;
 
 		void	update_prefix(void) {_cmd. _prefix = _current._lexeme; }
@@ -36,7 +37,11 @@ class parser {
 		{
 			if (_current != type && !_panic)
 			{
-				std::cerr << "unexpected token: " << _current << std::endl;
+				if (_current != EOF_TOKEN)
+				{
+					std::cerr << "unexpected token: " << _current << std::endl;
+					_state = DUMP_CMD;
+				}
 				_panic = true;
 			}
 			else if (!_panic)
@@ -45,7 +50,7 @@ class parser {
 
 	public:
 
-		parser(const Buffer& buff) : _scan(buff), _panic(false)
+		parser(const Buffer& buff) : _scan(buff), _state(INCOMPLETE_CMD), _panic(false)
 		{
 			_current = get_token(_scan);
 		}
@@ -68,11 +73,7 @@ class parser {
 
 		int	state(void) const
 		{
-			if (_panic && _current == EOF_TOKEN)
-				return (STOP_PARSE);
-			else if (_panic)
-				return (DUMP_CMD);
-			return (VALID_CMD);
+			return (_state);
 		}
 
 		void	reset(void)

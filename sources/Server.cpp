@@ -170,7 +170,7 @@ void	Server::run()
 			}
 			if ( _iter->revents & POLLIN)
 			{
-				ssize_t	count = recv(_iter->fd, buff, 512, 0);
+				ssize_t	count = recv(_iter->fd, buff, BUFSIZE, 0);
 				if (count < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 				{
 					std::cerr << _iter->fd << " blocking error" << std::endl;
@@ -213,6 +213,7 @@ void	Server::run()
 						p.parse();
 						if (p.state() == VALID_CMD)
 						{
+							std::cerr << "HERE" << std::endl;
 							Command	exec(_data);
 							Reply	reply;
 							irc_cmd	cmd;
@@ -222,7 +223,8 @@ void	Server::run()
 							reply = exec.out();
 							error_caller(reply._rplnum, reply._dest, reply._args);
 						}
-						storage.reset();
+						if (p.state() == VALID_CMD || p.state() == DUMP_CMD)
+							storage.reset();
 						storage.append(buff + i, count - i);
 						++_iter;
 					}
