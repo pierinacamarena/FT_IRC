@@ -4,7 +4,9 @@
 #include <unistd.h>
 #include <stdexcept>
 #include <iostream>
+
 #include "headers.hpp"
+#include "Buffer.hpp"
 
 #define BUFFSIZE 512
 #define _EOF_ -1
@@ -13,28 +15,26 @@ class	scanner {
 
 	const char*	_start;
 	const char*	_current;
-	ssize_t		_count;
+	const char*	_end;
 
 	public:
 
-	scanner(const char* buff, ssize_t count) :
-		_start(buff),
-		_current(buff),
-		_count(count)
+	scanner(const Buffer& buff) :
+		_start(buff._buff),
+		_current(buff._buff),
+		_end(buff._current)
 		{ }
 
 	int	get(void)
 	{
-		if (_count == 0)
+		if (_current == _end)
 			return (_EOF_);
-		_count--;
 		return (*_current++);
 	}
 
 	void	unget(void)
 	{
 		_current--;	
-		_count++;
 	}
 
 	size_t	count(void)
