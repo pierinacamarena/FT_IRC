@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/07 17:27:23 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:43:57 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,83 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 			err_nosuch_channel(*it, args);
 	case ERR_TOOMANYTARGETS:
 		for (; it != dest_fds.end(); ++it)
-			err_toomany_targets(*it, args);		
+			err_toomany_targets(*it, args);
+	case ERR_BANNEDFROMCHAN:
+		for (; it != dest_fds.end(); ++it)
+			err_banned_fromchan(*it, args);
+	case ERR_BADCHANNELKEY:
+		for (; it != dest_fds.end(); ++it)
+			err_badchannel_key(*it, args);
+	case ERR_BADCHANMASK:
+		for (; it != dest_fds.end(); ++it)
+			err_bad_chanmask(*it, args);
+	case ERR_TOOMANYCHANNELS:
+		for (; it != dest_fds.end(); ++it)
+			err_toomany_channels(*it, args);
+	case ERR_UNAVAILRESOURCE:
+		for (; it != dest_fds.end(); ++it)
+			err_unavail_resource(*it, args);
+	case ERR_NOTONCHANNEL:
+		for (; it != dest_fds.end(); ++it)
+			err_noton_channel(*it, args);
+	case ERR_NOCHANMODES:
+		for (; it != dest_fds.end(); ++it)
+			err_nochan_modes(*it, args);
+	case ERR_USERNOTINCHANNEL:
+		for (; it != dest_fds.end(); ++it)
+			err_usernot_inchannel(*it, args);
+	case ERR_KEYSET:
+		for (; it != dest_fds.end(); ++it)
+			err_keyset(*it, args);
+	case ERR_CHANOPRIVSNEEDED:
+		for (; it != dest_fds.end(); ++it)
+			err_chano_privsneeded(*it, args);
+	case ERR_UNKNOWNMODE:
+		for (; it != dest_fds.end(); ++it)
+			err_unknown_mode(*it, args);
+	case ERR_NOSUCHSERVER:
+		for (; it != dest_fds.end(); ++it)
+			err_nosuch_server(*it, args);
+	case ERR_NOSUCHNICK:
+		for (; it != dest_fds.end(); ++it)
+			err_nosuch_nick(*it, args);
+	case ERR_USERONCHANNEL:
+		for (; it != dest_fds.end(); ++it)
+			err_user_on_channel(*it, args);
+	case ERR_NORECIPIENT:
+		for (; it != dest_fds.end(); ++it)
+			err_norecipient(*it, args);
+	case ERR_CANNOTSENDTOCHAN:
+		for (; it != dest_fds.end(); ++it)
+			err_cannotsend_tochan(*it, args);
+	case ERR_WILDTOPLEVEL:
+		for (; it != dest_fds.end(); ++it)
+			err_wildto_plevel(*it, args);
+	case ERR_NOTEXTTOSEND:
+		for (; it != dest_fds.end(); ++it)
+			err_notext_tosend(*it, args);
+	case ERR_NOTOPLEVEL:
+		for (; it != dest_fds.end(); ++it)
+			err_noto_plevel(*it, args);
+	case ERR_WASNOSUCHNICK:
+		for (; it != dest_fds.end(); ++it)
+			err_wasno_suchnick(*it, args);
+	case ERR_NOPRIVILEGES:
+		for (; it != dest_fds.end(); ++it)
+			err_noprivileges(*it, args);
+	case ERR_CANTKILLSERVER:
+		for (; it != dest_fds.end(); ++it)
+			err_cant_killserver(*it, args);
+	case ERR_NOORIGIN:
+		for (; it != dest_fds.end(); ++it)
+			err_noorigin(*it, args);
+	case ERR_USERSDISABLED:
+		for (; it != dest_fds.end(); ++it)
+			err_users_disabled(*it, args);
+	case ERR_FILEERROR:
+		for (; it != dest_fds.end(); ++it)
+			err_filerror(*it, args);
+
 	case RPL_WELCOME:
 		for (; it != dest_fds.end(); ++it)
 			rpl_welcome_message(*it, args);
