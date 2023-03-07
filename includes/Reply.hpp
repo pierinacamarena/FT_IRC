@@ -17,7 +17,7 @@ void	err_restricted(int dest_fd, const std::vector<std::string> args);
 void	err_nooperhost(int dest_fd, const std::vector<std::string> args);
 void	err_passwd_mistmatch(int dest_fd, const std::vector<std::string> args);
 void	err_umode_unknownflag(int dest_fd, const std::vector<std::string> args);
-void	err_users_dontmatch(int dest_fd);
+void	err_users_dontmatch(int dest_fd, const std::vector<std::string> args);
 void	err_invite_onlychan(int dest_fd, const std::vector<std::string> args);
 void	err_channel_isfull(int dest_fd, const std::vector<std::string> args);
 void	err_nosuch_channel(int dest_fd, const std::vector<std::string> args);
@@ -27,7 +27,7 @@ void	err_toomany_targets(int dest_fd, const std::vector<std::string> args);
 
 void	reply_caller(int reply_id, const std::set<int> dest_fds, const std::vector<std::string>& args);
 void	rpl_welcome_message(int dest_fd, const std::vector<std::string> args);
-void	rpl_umodeis(int dest_fd, const std::string identifyer);
+void	rpl_umodeis(int dest_fd, const std::vector<std::string> args);
 void	rpl_youreoper(int dest_fd, const std::vector<std::string> args);
 
 
