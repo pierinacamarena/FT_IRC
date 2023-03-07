@@ -19,6 +19,7 @@
 #include <vector>
 #include <poll.h>
 #include <fcntl.h>
+#include <sstream>
 #include <iostream>
 #include <map>
 #include <set>
@@ -99,7 +100,6 @@
 #define ERR_WILDTOPLEVEL 414
 #define ERR_NOTEXTTOSEND 412
 #define ERR_NOTOPLEVEL 413
-#define ERR_TOOMANYTARGETS 407
 #define ERR_WASNOSUCHNICK 406
 #define ERR_NOPRIVILEGES 481
 #define ERR_CANTKILLSERVER 483
