@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/07 18:56:46 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/07 20:39:35 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -401,23 +401,43 @@ void	err_unknown_command(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
 	std::string err_message = prefix + " " + args[2] + " :Unknown command\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1] + args[2];
+	// std::string err_message = prefix + " " + args[3] + " :Unknown command\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 //461
 void	err_need_moreparams(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Not enough parameters\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	if (args.size() > 3)
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+		std::string err_message = prefix + args[3] + " :Not enough parameters\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	}
+	else
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1];
+		std::string err_message = prefix + args[2] + " :Not enough parameters\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	}
 }
 
 //462
 void	err_already_registered(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + " :Unauthorized command (already registered)\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	if (args.size() > 2)
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+		std::string err_message = prefix + " :Unauthorized command (already registered)\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	}
+	else
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1];
+		std::string err_message = prefix + " :Unauthorized command (already registered)\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	}
 	// ":Unauthorized command (alredy registered)"
 }
 
@@ -563,7 +583,7 @@ void	err_nochan_modes(int dest_fd, const std::vector<std::string> args)
 void	err_usernot_inchannel(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[1] + " " + args[2] + " :They aren't on that channel\n";
+	std::string err_message = prefix + args[2] + " " + args[3] + " :They aren't on that channel\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //467
@@ -598,14 +618,14 @@ void	err_nosuch_server(int dest_fd, const std::vector<std::string> args)
 void	err_nosuch_nick(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[1] + " :No such nick/channel\n";
+	std::string err_message = prefix + args[2] + " :No such nick/channel\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //443
 void	err_user_on_channel(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[1] + " " + args[2] + " :is already on channel\n";
+	std::string err_message = prefix + args[2] + " " + args[3] + " :is already on channel\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //411
@@ -793,7 +813,7 @@ void	rpl_notopic(int dest_fd, const std::vector<std::string> args)
 void	rpl_nam_reply(int dest_fd, const std::vector<std::string> args)
 {
 	//MEOOOOOOWWWW
-		(void)dest_fd;
+	(void)dest_fd;
 	(void)args;
 }
 
@@ -833,105 +853,119 @@ void	rpl_inviting(int dest_fd, const std::vector<std::string> args)
 void	rpl_away(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[1] + " :" + args[2] + "\n";
+	std::string err_message = prefix + args[2] + " :" + args[3] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);				
 }
 
 // 352
 void	rpl_whoreply(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + " " + args[4] + " " + args[5] + " " + args[6] + ": " + args[7] +  " " + args[8] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 315
 void	rpl_endof_who(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of WHO list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 311
 void	rpl_whois_user(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + args[3] + args[4] + args[5] + " * :" + args[6] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 319
 void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + ":@" + args[3] + " + " + args[4] +"\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 317
 void	rpl_whois_idle(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + " :seconds idle\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 318
 void	rpl_endof_whois(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of WHOIS list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 312
 void	rpl_whois_server(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[0] + " :" + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 313
 void	rpl_whois_operator(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of WHOIS list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 314
 void	rpl_whowas_user(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + " " + args[4] + "* :" + args[5] +"\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 369
 void	rpl_endof_whowas(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of WHOWAS\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 392
 void	rpl_users_start(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :UserID   Terminal  Host\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 395
 void	rpl_nousers(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :Nobody logged in\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 393
 void	rpl_users(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :" + args[2] + " " + args[3] + " " + args[4] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 394
 void	rpl_endof_users(int dest_fd, const std::vector<std::string> args)
 {
-	(void)dest_fd;
-	(void)args;	
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :End of users\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
