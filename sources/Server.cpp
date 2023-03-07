@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include "../includes/Buffer.hpp"
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -127,10 +128,10 @@ int		Server::receive_data(pfd_iter iter, int *numbytes)
 	return (iter->fd);
 }
 
-
 void	Server::run()
 {
-	char	buff[512];
+	char					buff[BUFSIZE];
+	std::map<int, Buffer>	bufmap;
 
 	if (DEBUG)
 	{
@@ -157,6 +158,7 @@ void	Server::run()
 		{
 			int fd = accept_connection(0);
 			_data->add_user(fd, host, remoteIP);
+			bufmap.insert(std::make_pair(fd, Buffer()));
 		}
 		std::vector<struct pollfd>::iterator _iter = _pfds.begin() + 1;
 		while (_iter != _pfds.end())
@@ -174,6 +176,7 @@ void	Server::run()
 					std::cerr << _iter->fd << " blocking error" << std::endl;
 					_data->delete_user(_iter->fd);
 					close(_iter->fd);
+					bufmap.erase(_iter->fd);
 					_iter = _pfds.erase(_iter);
 				}
 				else if (count < 0)
@@ -186,16 +189,28 @@ void	Server::run()
 					std::cerr << _iter->fd << " close connection" << std::endl;
 					_data->delete_user(_iter->fd);
 					close(_iter->fd);
+					bufmap.erase(_iter->fd);
 					_iter = _pfds.erase(_iter);
 				}
 				else
 				{
-					std::cout << "<= " << std::string(buff, buff + count);
-					parser	p(buff, count);
-					// ret = receive_send_data(_iter);
-					p.parse();
-					while (p.state() != STOP_PARSE)
+					Buffer&	storage = (bufmap.find(_iter->fd))->second;
+					if (storage.size() + count > BUFSIZE)
 					{
+						std::cerr << _iter->fd << " overflown its buffer" << std::endl;
+						_data->delete_user(_iter->fd);
+						close(_iter->fd);
+						bufmap.erase(_iter->fd);
+						_iter = _pfds.erase(_iter);
+					}
+					else
+					{
+						ssize_t	i = 0;
+						while (buff[i++] != '\n' && i < count)
+							;
+						storage.append(buff, i);
+						parser	p(storage);
+						p.parse();
 						if (p.state() == VALID_CMD)
 						{
 							Command	exec(_data);
@@ -206,19 +221,12 @@ void	Server::run()
 							exec.execute_cmd(_iter->fd, cmd);
 							reply = exec.out();
 							error_caller(reply._rplnum, reply._dest, reply._args);
-							exec.reset();
-							p.reset();
 						}
-						else
-						{
-							p.skip_cmd();
-							p.reset();
-						}
-						p.parse();
+						storage.reset();
+						storage.append(buff + i, count - i);
+						++_iter;
 					}
-					++_iter;
 				}
-			}
 		}
 	}
 }

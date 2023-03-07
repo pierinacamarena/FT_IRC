@@ -45,7 +45,7 @@ class parser {
 
 	public:
 
-		parser(const char* buff, ssize_t count) : _scan(buff, count), _panic(false)
+		parser(const Buffer& buff) : _scan(buff), _panic(false)
 		{
 			_current = get_token(_scan);
 		}
