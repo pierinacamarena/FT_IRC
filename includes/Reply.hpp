@@ -52,6 +52,38 @@ void	err_filerror(int dest_fd, const std::vector<std::string> args);
 void	reply_caller(int reply_id, const std::set<int> dest_fds, const std::vector<std::string>& args);
 void	rpl_welcome_message(int dest_fd, const std::vector<std::string> args);
 void	rpl_umodeis(int dest_fd, const std::vector<std::string> args);
+void	rpl_topic(int dest_fd, const std::vector<std::string> args);
+void	rpl_ban_list(int dest_fd, const std::vector<std::string> args);
+void	rpl_except_list(int dest_fd, const std::vector<std::string> args);
+void	rpl_channel_modeis(int dest_fd, const std::vector<std::string> args);
+void	rpl_invite_list(int dest_fd, const std::vector<std::string> args);
+void	rpl_uniqops(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_banlist(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_exceptlist(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_invitelist(int dest_fd, const std::vector<std::string> args);
+void	rpl_notopic(int dest_fd, const std::vector<std::string> args);
+void	rpl_nam_reply(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_names(int dest_fd, const std::vector<std::string> args);
+void	rpl_list(int dest_fd, const std::vector<std::string> args);
+void	rpl_listend(int dest_fd, const std::vector<std::string> args);
+void	rpl_inviting(int dest_fd, const std::vector<std::string> args);
+void	rpl_away(int dest_fd, const std::vector<std::string> args);
+void	rpl_whoreply(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_who(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_user(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_idle(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_whois(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_server(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_server(int dest_fd, const std::vector<std::string> args);
+void	rpl_whois_operator(int dest_fd, const std::vector<std::string> args);
+void	rpl_whowas_user(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_whowas(int dest_fd, const std::vector<std::string> args);
+void	rpl_users_start(int dest_fd, const std::vector<std::string> args);
+void	rpl_nousers(int dest_fd, const std::vector<std::string> args);
+void	rpl_users(int dest_fd, const std::vector<std::string> args);
+void	rpl_endof_users(int dest_fd, const std::vector<std::string> args);
+
 void	rpl_youreoper(int dest_fd, const std::vector<std::string> args);
 
 
