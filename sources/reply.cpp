@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/07 17:43:57 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/07 18:47:14 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 	case ERR_FILEERROR:
 		for (; it != dest_fds.end(); ++it)
 			err_filerror(*it, args);
-
 	case RPL_WELCOME:
 		for (; it != dest_fds.end(); ++it)
 			rpl_welcome_message(*it, args);
@@ -154,6 +153,122 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 	case RPL_UMODEIS:
 		for (; it != dest_fds.end(); ++it)
 			rpl_umodeis(*it, args);
+		break;
+	case RPL_BANLIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_ban_list(*it, args);
+		break;
+	case RPL_EXCEPTLIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_except_list(*it, args);
+		break;
+	case RPL_CHANNELMODEIS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_channel_modeis(*it, args);
+		break;
+	case RPL_INVITELIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_invite_list(*it, args);
+		break;
+	case RPL_UNIQOPIS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_uniqops(*it, args);
+		break;
+	case RPL_ENDOFBANLIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_banlist(*it, args);
+		break;
+	case RPL_ENDOFEXCEPTLIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_exceptlist(*it, args);
+		break;
+	case RPL_ENDOFINVITELIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_invitelist(*it, args);
+		break;
+	case RPL_NOTOPIC:
+		for (; it != dest_fds.end(); ++it)
+			rpl_notopic(*it, args);
+		break;
+	case RPL_NAMREPLY:
+		for (; it != dest_fds.end(); ++it)
+			rpl_nam_reply(*it, args);
+		break;
+	case RPL_ENDOFNAMES:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_names(*it, args);
+		break;
+	case RPL_LIST:
+		for (; it != dest_fds.end(); ++it)
+			rpl_list(*it, args);
+		break;
+	case RPL_LISTEND:
+		for (; it != dest_fds.end(); ++it)
+			rpl_listend(*it, args);
+		break;
+	case RPL_INVITING:
+		for (; it != dest_fds.end(); ++it)
+			rpl_inviting(*it, args);
+		break;
+	case RPL_AWAY:
+		for (; it != dest_fds.end(); ++it)
+			rpl_away(*it, args);
+		break;
+	case RPL_WHOREPLY:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whoreply(*it, args);
+		break;
+	case RPL_ENDOFWHO:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_who(*it, args);
+		break;
+	case RPL_WHOISUSER:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whois_user(*it, args);
+		break;
+	case RPL_WHOISCHANNELS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whois_channel(*it, args);
+		break;
+	case RPL_WHOISIDLE:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whois_idle(*it, args);
+		break;
+	case RPL_ENDOFWHOIS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_whois(*it, args);
+		break;
+	case RPL_WHOISSERVER:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whois_server(*it, args);
+		break;
+	case RPL_WHOISOPERATOR:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whois_operator(*it, args);
+		break;
+	case RPL_WHOWASUSER:
+		for (; it != dest_fds.end(); ++it)
+			rpl_whowas_user(*it, args);
+		break;
+	case RPL_ENDOFWHOWAS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_umodeis(*it, args);
+		break;
+	case RPL_USERSSTART:
+		for (; it != dest_fds.end(); ++it)
+			rpl_users_start(*it, args);
+		break;
+	case RPL_NOUSERS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_nousers(*it, args);
+		break;
+	case RPL_USERS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_users(*it, args);
+		break;
+	case RPL_ENDOFUSERS:
+		for (; it != dest_fds.end(); ++it)
+			rpl_endof_users(*it, args);
 		break;
 	default:
 		break;
@@ -587,11 +702,220 @@ void	rpl_youreoper(int dest_fd, const std::vector<std::string> args)
 	std::string err_message = prefix + " :You are now an IRC operator\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
-
+// 221
 void	rpl_umodeis(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
 	std::string err_message = prefix + args[2] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+}
+// 332
+void	rpl_topic(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :" + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+}
+
+// 367
+void	rpl_ban_list(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+
+// 348
+void	rpl_except_list(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+
+// 324
+void	rpl_channel_modeis(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + " " + args[4] +"\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 346
+void	rpl_invite_list(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 325
+void	rpl_uniqops(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[1] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+
+// 368
+void	rpl_endof_banlist(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of channel ban list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 349
+void	rpl_endof_exceptlist(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of channel exception list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);			
+}
+
+// 347
+void	rpl_endof_invitelist(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of channel invite list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 331
+void	rpl_notopic(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :No topic is set\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 353
+void	rpl_nam_reply(int dest_fd, const std::vector<std::string> args)
+{
+	//MEOOOOOOWWWW
+}
+
+// 366
+void	rpl_endof_names(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :End of NAMES list\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);			
+}
+
+// 322
+void	rpl_list(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " # " + args[3] + " :" + args[4] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 323
+void	rpl_listend(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :End of LIST\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);			
+}
+
+// 341
+void	rpl_inviting(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " " + args[1] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+}
+
+// 301
+void	rpl_away(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[1] + " :" + args[2] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);				
+}
+
+// 352
+void	rpl_whoreply(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 315
+void	rpl_endof_who(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 311
+void	rpl_whois_user(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 319
+void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 317
+void	rpl_whois_idle(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 318
+void	rpl_endof_whois(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 312
+void	rpl_whois_server(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 313
+void	rpl_whois_operator(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 314
+void	rpl_whowas_user(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 369
+void	rpl_endof_whowas(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 392
+void	rpl_users_start(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 395
+void	rpl_nousers(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 393
+void	rpl_users(int dest_fd, const std::vector<std::string> args)
+{
+	
+}
+
+// 394
+void	rpl_endof_users(int dest_fd, const std::vector<std::string> args)
+{
+	
 }
 
