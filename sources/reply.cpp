@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/06 23:56:37 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:27:23 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 	case ERR_PASSWDMISMATCH: 
 		for (; it != dest_fds.end(); ++it)
 			err_passwd_mistmatch(*it, args);
-		break;3 Rue de Lunéville, 75019 Paris
+		break;
 	case ERR_RESTRICTED:
 		for (; it != dest_fds.end(); ++it)
 			err_restricted(*it, args);
