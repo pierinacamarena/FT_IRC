@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/06 21:33:41 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/06 23:56:37 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 	case ERR_PASSWDMISMATCH: 
 		for (; it != dest_fds.end(); ++it)
 			err_passwd_mistmatch(*it, args);
-		break;
+		break;3 Rue de Lunéville, 75019 Paris
 	case ERR_RESTRICTED:
 		for (; it != dest_fds.end(); ++it)
 			err_restricted(*it, args);
@@ -56,6 +56,21 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 	case ERR_USERSDONTMATCH:
 		for (; it != dest_fds.end(); ++it)
 			err_users_dontmatch(*it, args);
+	case ERR_UMODEUNKNOWNFLAG:
+		for (; it != dest_fds.end(); ++it)
+			err_umode_unknownflag(*it, args);
+	case ERR_INVITEONLYCHAN:
+		for (; it != dest_fds.end(); ++it)
+			err_invite_onlychan(*it, args);
+	case ERR_CHANNELISFULL:
+		for (; it != dest_fds.end(); ++it)
+			err_channel_isfull(*it, args);
+	case ERR_NOSUCHCHANNEL:
+		for (; it != dest_fds.end(); ++it)
+			err_nosuch_channel(*it, args);
+	case ERR_TOOMANYTARGETS:
+		for (; it != dest_fds.end(); ++it)
+			err_toomany_targets(*it, args);		
 	case RPL_WELCOME:
 		for (; it != dest_fds.end(); ++it)
 			rpl_welcome_message(*it, args);
@@ -219,7 +234,7 @@ void	err_already_registered(int dest_fd, const std::vector<std::string> args)
 void	err_not_registered(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + ":You have not registered\n";
+	std::string err_message = prefix + " :You have not registered\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
@@ -227,7 +242,7 @@ void	err_not_registered(int dest_fd, const std::vector<std::string> args)
 void	err_no_nicknamegive(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + ":No nickname given\n";
+	std::string err_message = prefix + " :No nickname given\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":No nickname given"
 }
@@ -236,7 +251,7 @@ void	err_no_nicknamegive(int dest_fd, const std::vector<std::string> args)
 void	err_erroneus_nickname(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] " :Erroneus nickname\n";
+	std::string err_message = prefix + args[2] + " :Erroneus nickname\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 // 433
@@ -254,13 +269,6 @@ void	err_restricted(int dest_fd, const std::vector<std::string> args)
 	std::string err_message = prefix + " :Your connection is restricted!\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	// ":Your connection is restricted!"
-}
-// 491
-void	err_nooperhost(int dest_fd, const std::vector<std::string> args)
-{
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + ":No O-lines for your host\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 // 464
 void	err_passwd_mistmatch(int dest_fd, const std::vector<std::string> args)
@@ -308,7 +316,182 @@ void	err_nosuch_channel(int dest_fd, const std::vector<std::string> args)
 void	err_toomany_targets(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :No such channel\n";
+	std::string err_message = prefix + args[2] + " :" + args[0] + "recipients." + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+// 474
+void	err_banned_fromchan(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Cannot join channel (+b)\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+// 475
+void	err_badchannel_key(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Cannot join channel (+k)\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//476
+void	err_bad_chanmask(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Bad Channel Mask\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//405
+void	err_toomany_channels(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :You have joined too many channels\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//437
+void	err_unavail_resource(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Nick/channel is temporarily unavailable\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//442
+void	err_noton_channel(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :You're not on that channel\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//477
+void	err_nochan_modes(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Channel doesn't support modes\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//441
+void	err_usernot_inchannel(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[1] + " " + args[2] + " :They aren't on that channel\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//467
+void	err_keyset(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Channel key already set\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//482
+void	err_chano_privsneeded(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :You're not channel operator\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//472
+void	err_unknown_mode(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :is unknown mode char to me for " + args[3] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//402
+void	err_nosuch_server(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[0] + " :No such server\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//401
+void	err_nosuch_nick(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[1] + " :No such nick/channel\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//443
+void	err_user_on_channel(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[1] + " " + args[2] + " :is already on channel\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//411
+void	err_norecipient(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :No recipient given (" + args[2] + ")\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//404
+void	err_cannotsend_tochan(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Cannot send to channel\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//414
+void	err_wildto_plevel(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :Wildcard in toplevel domain\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//412
+void	err_notext_tosend(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :No text to send\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//413
+void	err_noto_plevel(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :No toplevel domain specified\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//406
+void	err_wasno_suchnick(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + args[2] + " :There was no such nickname\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//481
+void	err_noprivileges(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :Permission Denied- You're not an IRC operator\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//483
+void	err_cant_killserver(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :You can't kill a server!\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//409
+void	err_noorigin(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :No origin specified\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//446
+void	err_users_disabled(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :USERS has been disabled\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+}
+//424
+void	err_filerror(int dest_fd, const std::vector<std::string> args)
+{
+	std::string	prefix = ":" + args[0] + " " + args[1];
+	std::string err_message = prefix + " :File error doing " + args[2] + "on" + args[3] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //replies
@@ -317,7 +500,7 @@ void	err_toomany_targets(int dest_fd, const std::vector<std::string> args)
 void	rpl_welcome_message(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = "Welcome to the Internet Relay Network " + prefix + "\n";
+	std::string err_message = prefix + "Welcome to the Internet Relay Network, " + args[1] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
@@ -332,7 +515,7 @@ void	rpl_youreoper(int dest_fd, const std::vector<std::string> args)
 void	rpl_umodeis(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + "\n";
+	std::string err_message = prefix + args[2] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
