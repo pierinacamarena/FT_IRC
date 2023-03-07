@@ -205,7 +205,7 @@ void	Server::run()
 							cmd = p.out();
 							exec.execute_cmd(_iter->fd, cmd);
 							reply = exec.out();
-							error_caller(reply._rplnum, reply._dest, cmd._cmd, reply._args);
+							error_caller(reply._rplnum, reply._dest, reply._args);
 							exec.reset();
 							p.reset();
 						}
