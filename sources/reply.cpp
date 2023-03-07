@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/07 18:47:14 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/07 18:56:46 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -793,6 +793,8 @@ void	rpl_notopic(int dest_fd, const std::vector<std::string> args)
 void	rpl_nam_reply(int dest_fd, const std::vector<std::string> args)
 {
 	//MEOOOOOOWWWW
+		(void)dest_fd;
+	(void)args;
 }
 
 // 366
@@ -838,84 +840,98 @@ void	rpl_away(int dest_fd, const std::vector<std::string> args)
 // 352
 void	rpl_whoreply(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;
 }
 
 // 315
 void	rpl_endof_who(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 311
 void	rpl_whois_user(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;
 }
 
 // 319
 void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 317
 void	rpl_whois_idle(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;
 }
 
 // 318
 void	rpl_endof_whois(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 312
 void	rpl_whois_server(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;
 }
 
 // 313
 void	rpl_whois_operator(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 314
 void	rpl_whowas_user(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 369
 void	rpl_endof_whowas(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 392
 void	rpl_users_start(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;
 }
 
 // 395
 void	rpl_nousers(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 393
 void	rpl_users(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
 // 394
 void	rpl_endof_users(int dest_fd, const std::vector<std::string> args)
 {
-	
+	(void)dest_fd;
+	(void)args;	
 }
 
