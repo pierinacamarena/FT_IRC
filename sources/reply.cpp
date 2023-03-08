@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/08 19:25:54 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/08 21:26:08 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -891,7 +891,7 @@ void	rpl_youreoper(int dest_fd, const std::vector<std::string> args)
 void	rpl_umodeis(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
-	std::string err_message = prefix + " " + args[2] + "\n";
+	std::string err_message = prefix + " " + args[2] + " " + args[3] + " " + args[4] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 
 	// std::string	prefix = ":" + args[0] + " " + args[1];
@@ -1038,8 +1038,8 @@ void	rpl_endof_names(int dest_fd, const std::vector<std::string> args)
 	// send(dest_fd, err_message.c_str(), err_message.size(), 0);			
 }
 
-// 322
 void	rpl_list(int dest_fd, const std::vector<std::string> args)
+// 322
 {
 	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
 	std::string err_message = prefix + args[3] + " # " + args[4] + " :" + args[5] + "\n";
@@ -1090,7 +1090,7 @@ void	rpl_away(int dest_fd, const std::vector<std::string> args)
 void	rpl_whoreply(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
-	std::string err_message = prefix + " " + args[3] + " " + args[4] + " " + args[5] + " " + args[6] + " " + args[7] + " :" + args[8] +  " " + args[9] + "\n";
+	std::string err_message = prefix + " " + args[3] + " " + args[4] + " " + args[5] + " " + args[0] + " " + args[2] + "" + " :" + args[8] +  "H/G * @+" + args[9] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 
 	// std::string	prefix = ":" + args[0] + " " + args[1];
@@ -1126,7 +1126,14 @@ void	rpl_whois_user(int dest_fd, const std::vector<std::string> args)
 void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
-	std::string err_message = prefix + " " + args[3] + ":@" + args[4] + " + " + args[5] +"\n";
+	std::string err_message = prefix + " " + args[3] + " :";
+	if (args.size() > 4)
+	{
+		err_message = err_message + args[4];
+		for (int i = 5; i < args.size() ; i++)
+			err_message = err_message + " " + args[i];
+	}
+	err_message = err_message + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 
 	// std::string	prefix = ":" + args[0] + " " + args[1];
