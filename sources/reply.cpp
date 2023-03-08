@@ -1054,3 +1054,11 @@ void	rpl_endof_users(int dest_fd, const std::vector<std::string> args)
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
+// command style replies
+
+void	join_reply(int fd, const std::vector<std::string>& args)
+{
+	std::string	prefix = ":" + args[0];
+	std::string	err_message = prefix + " JOIN " + args[1] + "\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+}

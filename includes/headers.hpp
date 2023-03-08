@@ -111,6 +111,8 @@
 
 #define BUFSIZE 512
 
+#define MAX_CHAN_COUNT 10
+
 typedef std::vector<struct pollfd>::iterator pfd_iter;
 
 #endif
