@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/07 20:39:35 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/08 17:42:08 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -399,10 +399,11 @@ void	error_caller(int reply_id, const std::set<int>& dest_fds, const std::vector
 //
 void	err_unknown_command(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + " " + args[2] + " :Unknown command\n";
-	// std::string	prefix = ":" + args[0] + " " + args[1] + args[2];
-	// std::string err_message = prefix + " " + args[3] + " :Unknown command\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " " + args[2] + " :Unknown command\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Unknown command\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
@@ -412,13 +413,13 @@ void	err_need_moreparams(int dest_fd, const std::vector<std::string> args)
 	if (args.size() > 3)
 	{
 		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
-		std::string err_message = prefix + args[3] + " :Not enough parameters\n";
+		std::string err_message = prefix + " " +  args[3] + " :Not enough parameters\n";
 		send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	}
 	else
 	{
 		std::string	prefix = ":" + args[0] + " " + args[1];
-		std::string err_message = prefix + args[2] + " :Not enough parameters\n";
+		std::string err_message = prefix + " " + args[2] + " :Not enough parameters\n";
 		send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	}
 }
@@ -444,133 +445,213 @@ void	err_already_registered(int dest_fd, const std::vector<std::string> args)
 //451
 void	err_not_registered(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + " :You have not registered\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	if (args.size() > 2)
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+		std::string err_message = prefix + " :You have not registered\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	}
+	else
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1];
+		std::string err_message = prefix + " :You have not registered\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+	}
 }
 
 //431
 void	err_no_nicknamegive(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + " :No nickname given\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	if (args.size() > 2)
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+		std::string err_message = prefix + " :No nickname given\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	}
+	else
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1];
+		std::string err_message = prefix + " :No nickname given\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+	}
 	// ":No nickname given"
 }
 
 // 432 HERE I NEED TO CHECK IF HE IS STORING THE ERRONEOUS NICKNAME
 void	err_erroneus_nickname(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Erroneus nickname\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " " + args[2] + " :Erroneus nickname\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Erroneus nickname\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 // 433
 void	err_nickname_inuse(int dest_fd, const std::vector<std::string> args)
 {
+	// std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	// std::string err_message = prefix + " :Nickname is already in use\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
 	std::string	prefix = ":" + args[0] + " " + args[1];
 	std::string err_message = prefix + " :Nickname is already in use\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
-	// "<nick> :Nickname is already in use"
 }
 // 484
 void	err_restricted(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " :Your connection is restricted!\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
 	std::string err_message = prefix + " :Your connection is restricted!\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
-	// ":Your connection is restricted!"
 }
 // 464
 void	err_passwd_mistmatch(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + ":Password incorrect\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	if (args.size() > 2)
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+		std::string err_message = prefix + " :Password incorrect\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	}
+	else
+	{
+		std::string	prefix = ":" + args[0] + " " + args[1];
+		std::string err_message = prefix + " :Password incorrect\n";
+		send(dest_fd, err_message.c_str(), err_message.size(), 0);		
+	}
 }
 // 501
 void	err_umode_unknownflag(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " :Unknown MODE flag\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
 	std::string err_message = prefix + " :Unknown MODE flag\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
 }
 // 502
 void	err_users_dontmatch(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + ":Cannot change mode for other users\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " :Cannot change mode for other users\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " :Cannot change mode for other users\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
 }
 // 473
 void	err_invite_onlychan(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Cannot join channel (+i)\n";
-	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + " " + args[2] + " :Cannot join channel (+i)\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Cannot join channel (+i)\n";
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
+
 }
 // 471
 void	err_channel_isfull(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Cannot join channel (+l)\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :Cannot join channel (+l)\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Cannot join channel (+l)\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 403
 void	err_nosuch_channel(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :No such channel\n";
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :No such channel\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[2] + " :No such channel\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 407
 void	err_toomany_targets(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :" + args[0] + "recipients." + args[3] + "\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :" + args[1] + "recipients." + args[4] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :" + args[1] + "recipients." + args[3] + "\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 474
 void	err_banned_fromchan(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Cannot join channel (+b)\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Cannot join channel (+b)\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :Cannot join channel (+b)\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 // 475
 void	err_badchannel_key(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Cannot join channel (+k)\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Cannot join channel (+k)\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	//std::string	prefix = ":" + args[0] + " " + args[1];
+	//std::string err_message = prefix + args[2] + " :Cannot join channel (+k)\n";
+	//send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //476
 void	err_bad_chanmask(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Bad Channel Mask\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Bad Channel Mask\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :Bad Channel Mask\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //405
 void	err_toomany_channels(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :You have joined too many channels\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :You have joined too many channels\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :You have joined too many channels\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //437
 void	err_unavail_resource(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :Nick/channel is temporarily unavailable\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :Nick/channel is temporarily unavailable\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :Nick/channel is temporarily unavailable\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //442
 void	err_noton_channel(int dest_fd, const std::vector<std::string> args)
 {
-	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + args[2] + " :You're not on that channel\n";
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :You're not on that channel\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :You're not on that channel\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //477
 void	err_nochan_modes(int dest_fd, const std::vector<std::string> args)
@@ -578,6 +659,10 @@ void	err_nochan_modes(int dest_fd, const std::vector<std::string> args)
 	std::string	prefix = ":" + args[0] + " " + args[1];
 	std::string err_message = prefix + args[2] + " :Channel doesn't support modes\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);	
+
+	// std::string	prefix = ":" + args[0] + " " + args[1];
+	// std::string err_message = prefix + args[2] + " :Channel doesn't support modes\n";
+	// send(dest_fd, err_message.c_str(), err_message.size(), 0);	
 }
 //441
 void	err_usernot_inchannel(int dest_fd, const std::vector<std::string> args)
