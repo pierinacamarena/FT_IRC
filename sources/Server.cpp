@@ -213,7 +213,6 @@ void	Server::run()
 						p.parse();
 						if (p.state() == VALID_CMD)
 						{
-							std::cerr << "HERE" << std::endl;
 							Command	exec(_data);
 							Reply	reply;
 							irc_cmd	cmd;

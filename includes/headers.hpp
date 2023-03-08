@@ -107,6 +107,8 @@
 #define ERR_USERSDISABLED 446
 #define ERR_FILEERROR 424
 
+#define ERROR -1
+
 #define BUFSIZE 512
 
 typedef std::vector<struct pollfd>::iterator pfd_iter;

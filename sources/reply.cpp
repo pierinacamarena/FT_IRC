@@ -711,7 +711,7 @@ void	err_filerror(int dest_fd, const std::vector<std::string> args)
 void	rpl_welcome_message(int dest_fd, const std::vector<std::string> args)
 {
 	std::string	prefix = ":" + args[0] + " " + args[1];
-	std::string err_message = prefix + "Welcome to the Internet Relay Network, " + args[1] + "\n";
+	std::string err_message = prefix + " Welcome to the Internet Relay Network, " + args[2] + "\n";
 	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 

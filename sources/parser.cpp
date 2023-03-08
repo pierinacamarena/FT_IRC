@@ -55,6 +55,12 @@ void	parser::get_crlf(void)
 	
 void	parser::parse(void)
 {
+	if (_current == '\n')
+	{
+		get_crlf();
+		_state = DUMP_CMD;
+		return ;
+	}
 	if (_current == ':')
 		get_prefix();
 	else if (_current != '\n')
