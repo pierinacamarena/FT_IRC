@@ -6,7 +6,7 @@
 /*   By: pcamaren <pcamaren@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 16:59:07 by pcamaren          #+#    #+#             */
-/*   Updated: 2023/03/08 21:26:08 by pcamaren         ###   ########.fr       */
+/*   Updated: 2023/03/08 22:14:27 by pcamaren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1019,11 +1019,19 @@ void	rpl_notopic(int dest_fd, const std::vector<std::string> args)
 }
 
 // 353
+//TODO
 void	rpl_nam_reply(int dest_fd, const std::vector<std::string> args)
 {
-	//MEOOOOOOWWWW
-	(void)dest_fd;
-	(void)args;
+	std::string	prefix = ":" + args[0] + " " + args[1] + " " + args[2];
+	std::string err_message = prefix + " " + args[3] + " :";
+	if (args.size() > 4)
+	{
+		err_message = err_message + args[4];
+		for (size_t i = 5; i < args.size(); i++)
+			err_message = err_message + " " + args[i];
+	}
+	err_message = err_message + "\n";	
+	send(dest_fd, err_message.c_str(), err_message.size(), 0);
 }
 
 // 366
@@ -1130,7 +1138,7 @@ void	rpl_whois_channel(int dest_fd, const std::vector<std::string> args)
 	if (args.size() > 4)
 	{
 		err_message = err_message + args[4];
-		for (int i = 5; i < args.size() ; i++)
+		for (size_t i = 5; i < args.size() ; i++)
 			err_message = err_message + " " + args[i];
 	}
 	err_message = err_message + "\n";
